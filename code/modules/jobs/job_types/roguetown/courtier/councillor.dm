@@ -51,7 +51,7 @@
 /datum/outfit/job/roguetown/councillor
 	job_bitflag = BITFLAG_ROYALTY
 
-/datum/job/roguetown/lord/after_spawn(mob/living/H, mob/M, latejoin = TRUE)
+/datum/job/roguetown/councillor/after_spawn(mob/living/H, mob/M, latejoin = TRUE)
 	..()
 	if(ishuman(H))
 		var/prev_real_name = H.real_name

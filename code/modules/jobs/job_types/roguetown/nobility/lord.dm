@@ -73,7 +73,9 @@ GLOBAL_LIST_EMPTY(lord_titles)
 	if(ishuman(H))
 		var/prev_real_name = H.real_name
 		var/prev_name = H.name
-		var/nobility = "High"
+		var/nobility = "High Lord"
+		if(should_wear_femme_clothes(H))
+			nobility = "High Lady"
 		H.real_name = "[nobility] [prev_real_name]"
 		H.name = "[nobility] [prev_name]"
 
