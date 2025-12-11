@@ -83,9 +83,7 @@ GLOBAL_LIST_EMPTY(heretical_players)
 	if(ishuman(H))
 		var/prev_real_name = H.real_name
 		var/prev_name = H.name
-		var/churchiny = "Father"
-		if(should_wear_femme_clothes(H))
-			churchiny = "Mother"
+		var/churchiny = "Prelate"
 		H.real_name = "[churchiny] [prev_real_name]"
 		H.name = "[churchiny] [prev_name]"
 
