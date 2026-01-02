@@ -12,7 +12,7 @@
 	outfit = /datum/outfit/job/roguetown/niteman
 	display_order = JDO_NITEMASTER
 	give_bank_account = 20
-	min_pq = 1
+	min_pq = 3
 	max_pq = null
 	bypass_lastclass = TRUE
 	round_contrib_points = 3
@@ -67,7 +67,7 @@
 	belt = /obj/item/storage/belt/rogue/leather/black
 	shirt = /obj/item/clothing/suit/roguetown/shirt/tunic/purple
 	wrists = /obj/item/storage/keyring/nightman
-	neck = /obj/item/storage/belt/rogue/pouch/coins/rich
+	neck = /obj/item/storage/belt/rogue/pouch/merchant/coins
 	pants = /obj/item/clothing/under/roguetown/trou/leather
 	beltl = /obj/item/rogueweapon/whip
 

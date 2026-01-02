@@ -33,6 +33,7 @@ GLOBAL_LIST_EMPTY(lord_titles)
 	give_bank_account = 1000
 	required = TRUE
 	cmode_music = 'sound/music/combat_noble.ogg'
+	same_job_respawn_delay = 30 MINUTES
 
 	// Can't use the Throat when you can't talk properly or.. at all for that matter.
 	vice_restrictions = list(/datum/charflaw/mute, /datum/charflaw/unintelligible)
@@ -63,10 +64,9 @@ GLOBAL_LIST_EMPTY(lord_titles)
 			var/mob/living/carbon/human/regentbuddy = SSticker.regentmob
 			to_chat(L, span_notice("Word reached me on the approach that [regentbuddy.real_name], the [regentbuddy.job], served as regent in my absence."))
 		SSticker.regentmob = null //Time for regent to give up the position.
-		
+
 		addtimer(CALLBACK(L, TYPE_PROC_REF(/mob, lord_marriage_choice)), 50)
-		if(STATION_TIME_PASSED() <= 10 MINUTES) //Late to the party? Stuck with default colors, sorry!
-			addtimer(CALLBACK(L, TYPE_PROC_REF(/mob, lord_color_choice)), 50)
+		addtimer(CALLBACK(L, TYPE_PROC_REF(/mob, lord_color_choice)), 50)
 
 /datum/job/roguetown/lord/after_spawn(mob/living/H, mob/M, latejoin = TRUE)
 	..()
@@ -112,6 +112,7 @@ GLOBAL_LIST_EMPTY(lord_titles)
 		shirt = /obj/item/clothing/suit/roguetown/shirt/undershirt/black
 		armor = /obj/item/clothing/suit/roguetown/armor/leather/vest/black
 		shoes = /obj/item/clothing/shoes/roguetown/boots
+	saiga_shoes = /obj/item/clothing/shoes/roguetown/horseshoes/gold
 	if(H.wear_mask)
 		if(istype(H.wear_mask, /obj/item/clothing/mask/rogue/eyepatch))
 			qdel(H.wear_mask)
@@ -122,7 +123,7 @@ GLOBAL_LIST_EMPTY(lord_titles)
 	ADD_TRAIT(H, TRAIT_NOBLE, TRAIT_GENERIC)
 
 //	SSticker.rulermob = H
-/** 
+/**
 	Warrior Lord subclass. An evolution from the Daring Twit. This is the original Lord Class.
 */
 /datum/advclass/lord/warrior
@@ -158,18 +159,18 @@ GLOBAL_LIST_EMPTY(lord_titles)
 	..()
 	l_hand = /obj/item/rogueweapon/lordscepter
 	if(H.age == AGE_OLD)
-		H.adjust_skillrank(/datum/skill/combat/swords, 1, TRUE)
+		H.adjust_skillrank_up_to(/datum/skill/combat/swords, 5, TRUE)
 
-/** 
+/**
 	Merchant Lord subclass. Consider this an evolution from Sheltered Aristocrat.
-	Gets the same weighted 12 statspread + 5 fortune, but no strength. +2 Int, trade 2 End for 2 Perception. Keep speed. Deals gotta be quick. 
+	Gets the same weighted 12 statspread + 5 fortune, but no strength. +2 Int, trade 2 End for 2 Perception. Keep speed. Deals gotta be quick.
 	Get nice traits for seeing price, secular appraise and keen ears for spying.
 	Weapon skills are worse across the board compared to the warrior lord, apprentice only.
 	Has a high noble income plus a starting pouch with insane amount of money.
 */
 /datum/advclass/lord/merchant
 	name = "Merchant Lord"
-	tutorial = "You were always talented with coins and trade. And your talents have brought you to the position of the Lord of Azure Peak. You could be a merchant who bought his way into nobility and power, or an exceptionally talented noble who were inclined to be good with coins. Fighting directly is not your forte\
+	tutorial = "You were always talented with coins and trade. And your talents have brought you to the position of the Lord of Twilight Axis. You could be a merchant who bought his way into nobility and power, or an exceptionally talented noble who were inclined to be good with coins. Fighting directly is not your forte\
 	But you have plenty of wealth, keen ears, and know a good deal from a bad one."
 	outfit = /datum/outfit/job/roguetown/lord/merchant
 	category_tags = list(CTAG_LORD)
@@ -203,7 +204,7 @@ GLOBAL_LIST_EMPTY(lord_titles)
 	if(H.mind)
 		H.mind.AddSpell(new /obj/effect/proc_holder/spell/invoked/appraise/secular)
 
-/** 
+/**
 	Mage Lord subclass. Prince mage is a thing.
 	Light on skills, has some combat skills mage normally doesn't have. 18 pts so people don't complain they are better.
 	Stats is better than mage associate and magic heir. +12 total.
@@ -226,6 +227,7 @@ GLOBAL_LIST_EMPTY(lord_titles)
 	)
 	subclass_spellpoints = 18
 	subclass_skills = list(
+		/datum/skill/combat/staves = SKILL_LEVEL_APPRENTICE,
 		/datum/skill/combat/polearms = SKILL_LEVEL_APPRENTICE,
 		/datum/skill/combat/wrestling = SKILL_LEVEL_NOVICE,
 		/datum/skill/combat/swords = SKILL_LEVEL_APPRENTICE,
@@ -243,16 +245,16 @@ GLOBAL_LIST_EMPTY(lord_titles)
 
 	backpack_contents = list(/obj/item/rogueweapon/huntingknife/idagger/steel/special = 1, /obj/item/roguegem/amethyst = 1, /obj/item/spellbook_unfinished/pre_arcyne = 1)
 
-/** 
+/**
 	Inbred Lord subclass. A joke class, evolution of the Inbred Wastrel.
 	Literally the same stat line and skills line, but with one exception - 10 Fortune.
 	Why? Because it is funny, that's why. They also have heavy armor training.
-	The fact that the inbred wastrel with 20 fortune and critical weakness 
+	The fact that the inbred wastrel with 20 fortune and critical weakness
 	can get into heavy armor and try to fight is hilarious.
 */
 /datum/advclass/lord/inbred
 	name = "Inbred Lord"
-	tutorial = "Psydon and Astrata smiles upon you. For despite your inbred and weak body, and your family's conspiracies to remove you from succession, you have somehow become the Lord of Azure Peak. May your reign lasts a hundred years."
+	tutorial = "Psydon and Astrata smiles upon you. For despite your inbred and weak body, and your family's conspiracies to remove you from succession, you have somehow become the Lord of Twilight Axis. May your reign lasts a hundred years."
 	outfit = /datum/outfit/job/roguetown/lord/inbred
 	category_tags = list(CTAG_LORD)
 	traits_applied = list(TRAIT_NOBLE, TRAIT_CRITICAL_WEAKNESS, TRAIT_NORUN, TRAIT_HEAVYARMOR, TRAIT_GOODLOVER)

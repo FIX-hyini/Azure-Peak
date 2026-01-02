@@ -45,6 +45,7 @@
 
 /obj/item/paper
 	name = "parchment"
+	desc = "Animal skin dried under tension to create a robust medium for writing."
 	gender = NEUTER
 	icon = 'icons/roguetown/items/misc.dmi'
 	icon_state = "paper"
@@ -169,7 +170,7 @@
 	if(in_range(user, src) || isobserver(user))
 //		var/obj/screen/read/R = user.hud_used.reads
 		var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
-			<html><head><style type=\"text/css\">
+			<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><style type=\"text/css\">
 			body { background-image:url('book.png');background-repeat: repeat; }</style></head><body scroll=yes>"}
 		dat += info
 		dat += "<br>"
@@ -195,7 +196,7 @@
 /obj/item/paper/proc/format_browse(t, mob/user)
 	user << browse_rsc('html/book.png')
 	var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
-			<html><head><style type=\"text/css\">
+			<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><style type=\"text/css\">
 			body { background-image:url('book.png');background-repeat: repeat; }</style></head><body scroll=yes>"}
 	dat += "[t]<br>"
 	dat += "<a href='?src=[REF(src)];close=1' style='position:absolute;right:50px'>Close</a>"
@@ -410,8 +411,6 @@
 				addtofield(text2num(id), t) // He wants to edit a field, let him.
 			else
 				info += t // Oh, he wants to edit to the end of the file, let him.
-				testing("[length(info)]")
-				testing("[findtext(info, "\n")]")
 				updateinfolinks()
 			playsound(src, 'sound/items/write.ogg', 100, FALSE)
 			format_browse(info_links, usr)
@@ -445,7 +444,7 @@
 		else
 			to_chat(user, "<span class='warning'>I can't write.</span>")
 			return
-	
+
 	if(istype(P, /obj/item/paper))
 		var/obj/item/paper/p = P
 		if(info && p.info)
@@ -490,7 +489,7 @@
 		add_fingerprint(user)
 		return ..()
 	else
-		return ..()	
+		return ..()
 
 /obj/item/paper/fire_act(added, maxstacks)
 	..()

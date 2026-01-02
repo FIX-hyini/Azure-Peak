@@ -12,21 +12,21 @@
 	outfit_female = null
 	display_order = JDO_WRETCH
 	show_in_credits = FALSE
-	min_pq = 10
+	min_pq = 20
 	max_pq = null
 
 	obsfuscated_job = TRUE
 
 	advclass_cat_rolls = list(CTAG_WRETCH = 20)
 	PQ_boost_divider = 10
-	round_contrib_points = 2
+	round_contrib_points = null
 
 	announce_latejoin = FALSE
 	wanderer_examine = TRUE
 	advjob_examine = TRUE
 	always_show_on_latechoices = TRUE
 	job_reopens_slots_on_death = FALSE
-	same_job_respawn_delay = 1 MINUTES
+	same_job_respawn_delay = 30 MINUTES
 	virtue_restrictions = list(/datum/virtue/heretic/zchurch_keyholder) //all wretch classes automatically get this
 	job_traits = list(TRAIT_STEELHEARTED, TRAIT_OUTLAW, TRAIT_HERESIARCH, TRAIT_SELF_SUSTENANCE, TRAIT_ZURCH)
 	job_subclasses = list(
@@ -44,7 +44,9 @@
 		/datum/advclass/wretch/plaguebearer,
 		/datum/advclass/wretch/pyromaniac,
 		/datum/advclass/wretch/vigilante,
-		/datum/advclass/wretch/blackoakwyrm
+		/datum/advclass/wretch/blackoakwyrm,
+		/datum/advclass/wretch/twilight_corsair,
+		/datum/advclass/wretch/lunacyembracer
 	)
 
 /datum/job/roguetown/wretch/after_spawn(mob/living/L, mob/M, latejoin = TRUE)
@@ -58,33 +60,66 @@
 
 // Proc for wretch to select a bounty
 /proc/wretch_select_bounty(mob/living/carbon/human/H)
-	var/bounty_poster = input(H, "Who placed a bounty on you?", "Bounty Poster") as anything in list("The Justiciary of Azuria", "The Grenzelhoftian Holy See", "The Otavan Orthodoxy")
-	// Felinid said we should gate it at 100 or so on at the lowest, so that wretch cannot ezmode it.
-	var/bounty_severity = input(H, "How severe are your crimes?", "Bounty Amount") as anything in list("Misdeed", "Harm towards lyfe", "Horrific atrocities")
+	var/datum/preferences/P = H?.client?.prefs
+	var/bounty_poster_key
+	var/bounty_severity_key
+	var/my_crime
+
+	if(P?.preset_bounty_enabled)
+		bounty_poster_key = P.preset_bounty_poster_key
+		bounty_severity_key = P.preset_bounty_severity_key
+		my_crime = P.preset_bounty_crime
+
+	if(bounty_poster_key && !GLOB.bounty_posters[bounty_poster_key])
+		bounty_poster_key = null
+
+	if(bounty_severity_key && !GLOB.wretch_bounty_severities[bounty_severity_key])
+		bounty_severity_key = null
+
+	if(!bounty_poster_key)
+		var/list/poster_choices = list()
+		for(var/key in GLOB.bounty_posters)
+			poster_choices[GLOB.bounty_posters[key]] = key
+		var/choice = input(H, "Who placed a bounty on you?", "Bounty Poster") as anything in poster_choices
+		bounty_poster_key = poster_choices[choice]
+
+	if(!bounty_severity_key)
+		var/list/sev_choices = list()
+		for(var/key in GLOB.wretch_bounty_severities)
+			sev_choices[GLOB.wretch_bounty_severities[key]["name"]] = key
+		var/choice = input(H, "How severe are your crimes?", "Bounty Amount") as anything in sev_choices
+		bounty_severity_key = sev_choices[choice]
+
+	var/bounty_poster = GLOB.bounty_posters[bounty_poster_key]
+
+	var/list/sev_data = GLOB.wretch_bounty_severities[bounty_severity_key]
+	var/bounty_total = rand(sev_data["min"], sev_data["max"])
+	if(bounty_severity_key == "ATROCITY")
+		if(bounty_poster_key == "AZURIA")
+			GLOB.outlawed_players += H.real_name
+		else
+			GLOB.excommunicated_players += H.real_name
+	if(!my_crime)
+		my_crime = input(H, "What is your crime?", "Crime") as text|null
+	if(!my_crime)
+		my_crime = "crimes against the Crown"
+
 	var/race = H.dna.species
 	var/gender = H.gender
 	var/list/d_list = H.get_mob_descriptors()
-	var/descriptor_height = build_coalesce_description_nofluff(d_list, H, list(MOB_DESCRIPTOR_SLOT_HEIGHT), "%DESC1%")
-	var/descriptor_body = build_coalesce_description_nofluff(d_list, H, list(MOB_DESCRIPTOR_SLOT_BODY), "%DESC1%")
-	var/descriptor_voice = build_coalesce_description_nofluff(d_list, H, list(MOB_DESCRIPTOR_SLOT_VOICE), "%DESC1%")
-	var/bounty_total = rand(100, 400) // Just in case
-	switch(bounty_severity)
-		if("Misdeed")
-			bounty_total = rand(100, 200)
-		if("Harm towards lyfe")
-			bounty_total = rand(200, 300)
-		if("Horrific atrocities")
-			bounty_total = rand(300, 400) // Let's not make it TOO profitable
-			if(bounty_poster == "The Justiciary of Azuria")
-				GLOB.outlawed_players += H.real_name
-			else
-				GLOB.excommunicated_players += H.real_name
-	var/my_crime = input(H, "What is your crime?", "Crime") as text|null
-	if (!my_crime)
-		my_crime = "crimes against the Crown"
+
+	var/descriptor_height = build_coalesce_description_nofluff(
+		d_list, H, list(MOB_DESCRIPTOR_SLOT_HEIGHT), "%DESC1%"
+	)
+	var/descriptor_body = build_coalesce_description_nofluff(
+		d_list, H, list(MOB_DESCRIPTOR_SLOT_BODY), "%DESC1%"
+	)
+	var/descriptor_voice = build_coalesce_description_nofluff(
+		d_list, H, list(MOB_DESCRIPTOR_SLOT_VOICE), "%DESC1%"
+	)
 	add_bounty(H.real_name, race, gender, descriptor_height, descriptor_body, descriptor_voice, bounty_total, FALSE, my_crime, bounty_poster)
 	to_chat(H, span_danger("You are playing an Antagonist role. By choosing to spawn as a Wretch, you are expected to actively create conflict with other players. Failing to play this role with the appropriate gravitas may result in punishment for Low Roleplay standards."))
-	
+
 /proc/update_wretch_slots()
 	var/datum/job/wretch_job = SSjob.GetJob("Wretch")
 	if(!wretch_job)

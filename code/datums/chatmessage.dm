@@ -5,14 +5,7 @@
 #define CHAT_MESSAGE_HEIGHT_DECAY	0.9 // Increase message decay based on the height of the message
 #define CHAT_MESSAGE_APPROX_LHEIGHT	11 // Approximate height in pixels of an 'average' line, used for height decay
 #define CHAT_MESSAGE_WIDTH			96 // pixels
-//#define WXH_TO_HEIGHT(x)			text2num(copytext((x), findtextEx((x), "x") + 1)) // thanks lummox
-#define WXH_TO_HEIGHT(measurement, return_var) \
-	do { \
-		var/_measurement = measurement; \
-		return_var = text2num(copytext(_measurement, findtextEx(_measurement, "x") + 1)); \
-	} while(FALSE);
-#define LAZYREMOVEASSOC(L, K, V) if(L) { if(L[K]) { L[K] -= V; if(!length(L[K])) L -= K; } if(!length(L)) L = null; }
-#define LAZYADDASSOC(L, K, V) if(!L) { L = list(); } L[K] += list(V);
+
 /**
   * # Chat Message Overlay
   *
@@ -102,7 +95,7 @@
 		target.chat_color_darkened = target.chat_color
 
 	// Get rid of any URL schemes that might cause BYOND to automatically wrap something in an anchor tag
-	var/static/regex/url_scheme = new(@"[A-Za-z][A-Za-z0-9+-\.]*:\/\/", "g")
+	var/static/regex/url_scheme = new(@"[A-Za-zА-Яа-я][A-Za-zА-Яа-я0-9+-\.]*:\/\/", "g")
 	text = replacetext(text, url_scheme, "")
 
 	// Reject whitespace
@@ -132,9 +125,8 @@
 	// Note we have to replace HTML encoded metacharacters otherwise MeasureText will return a zero height
 	// BYOND Bug #2563917
 	// Construct text
-	var/static/regex/html_metachars = new(@"&[A-Za-z]{1,7};", "g")
-	var/complete_text = "<span class='center maptext [extra_classes.Join(" ")]' style='color: [tgt_color]; font-size:[font_size]pt; font-family:\"Pterra\"; text-shadow:0 0 5px #000,0 0 5px #000,0 0 5px #000,0 0 5px #000;'>[text]</span>"
-
+	var/static/regex/html_metachars = new(@"&[A-Za-zА-Яа-я]{1,7};", "g")
+	var/complete_text = "<span class='center maptext [extra_classes.Join(" ")]' style='color: [tgt_color]; font-size:[font_size]pt; font-family:\"Mookmania\"; text-shadow:0 0 5px #000,0 0 5px #000,0 0 5px #000,0 0 5px #000;'>[text]</span>"
 	var/mheight
 	WXH_TO_HEIGHT(owned_by.MeasureText(complete_text, null, CHAT_MESSAGE_WIDTH), mheight)
 	if(!VERB_SHOULD_YIELD)
@@ -289,3 +281,15 @@
 			return "#[num2hex(x, 2)][num2hex(m, 2)][num2hex(c, 2)]"
 		if(5)
 			return "#[num2hex(c, 2)][num2hex(m, 2)][num2hex(x, 2)]"
+
+#undef CHAT_MESSAGE_SPAWN_TIME
+#undef CHAT_MESSAGE_LIFESPAN
+#undef CHAT_MESSAGE_EOL_FADE
+#undef CHAT_MESSAGE_EXP_DECAY
+#undef CHAT_MESSAGE_HEIGHT_DECAY
+#undef CHAT_MESSAGE_APPROX_LHEIGHT
+#undef CHAT_MESSAGE_WIDTH
+#undef CM_COLOR_SAT_MIN
+#undef CM_COLOR_SAT_MAX
+#undef CM_COLOR_LUM_MIN
+#undef CM_COLOR_LUM_MAX

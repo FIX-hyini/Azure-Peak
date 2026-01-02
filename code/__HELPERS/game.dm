@@ -330,7 +330,7 @@
 
 /proc/flick_overlay_view(image/I, atom/target, duration) //wrapper for the above, flicks to everyone who can see the target atom
 	var/list/viewing = list()
-	for(var/m in viewers(target))
+	for(var/m in get_hearers_in_view(world.view, target, RECURSIVE_CONTENTS_CLIENT_MOBS))
 		var/mob/M = m
 		if(M.client)
 			viewing += M.client
@@ -472,7 +472,6 @@
 			C = M.client
 	if(!C || (!C.prefs.windowflashing && !ignorepref))
 		return
-	winset(C, "mainwindow", "flash=5")
 
 //Recursively checks if an item is inside a given type, even through layers of storage. Returns the atom if it finds it.
 /proc/recursive_loc_check(atom/movable/target, type)

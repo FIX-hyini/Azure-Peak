@@ -57,7 +57,8 @@ Balloon Alert / Floating Text defines
 	/datum/species/kobold,\
 	/datum/species/goblinp,\
 	/datum/species/dullahan,\
-  /datum/species/dwarf/gnome\
+  /datum/species/dwarf/gnome,\
+	/datum/species/aura,\
 )
 
 #define RACES_RESPECTED \
@@ -70,7 +71,8 @@ Balloon Alert / Floating Text defines
 	/datum/species/vulpkanin,\
 	/datum/species/moth,\
 	/datum/species/dracon,\
-	/datum/species/dwarf/gnome\
+	/datum/species/dwarf/gnome,\
+	/datum/species/aura,\
 
 #define RACES_TOLERATED \
 	/datum/species/elf/dark,\
@@ -81,6 +83,8 @@ Balloon Alert / Floating Text defines
 	/datum/species/anthromorph,\
 	/datum/species/demihuman,\
 	/datum/species/halforc,\
+	/datum/species/aura,\
+
 
 #define RACES_SHUNNED \
 	/datum/species/anthromorphsmall,\
@@ -123,6 +127,8 @@ Balloon Alert / Floating Text defines
 	/datum/species/demihuman,\
 	/datum/species/kobold,\
 	/datum/species/goblinp,\
+	/datum/species/construct/metal,\
+	/datum/species/aura,\
 )
 
 #define CLOTHED_RACES_TYPES list(\
@@ -149,7 +155,8 @@ Balloon Alert / Floating Text defines
 	/datum/species/goblinp,\
 	/datum/species/construct/metal,\
 	/datum/species/dullahan,\
-	/datum/species/dwarf/gnome\
+	/datum/species/dwarf/gnome,\
+	/datum/species/aura,\
 )
 // Non-dwarf non-kobold non-goblin mostly
 #define NON_DWARVEN_RACE_TYPES list(\
@@ -171,6 +178,7 @@ Balloon Alert / Floating Text defines
 	/datum/species/halforc,\
 	/datum/species/construct/metal,\
 	/datum/species/dullahan,\
+	/datum/species/aura,\
 )
 // Non-elf non-dwarf non-kobold non-goblin mostly
 #define HUMANLIKE_RACE_TYPES list(\
@@ -188,6 +196,7 @@ Balloon Alert / Floating Text defines
 	/datum/species/demihuman,\
 	/datum/species/construct/metal,\
 	/datum/species/dullahan,\
+	/datum/species/aura,\
 )
 #define ALL_CLERIC_PATRONS list(/datum/patron/divine/astrata, /datum/patron/divine/noc, /datum/patron/divine/dendor, /datum/patron/divine/necra, /datum/patron/divine/pestra, /datum/patron/divine/ravox, /datum/patron/divine/malum, /datum/patron/divine/eora, /datum/patron/divine/undivided) // Currently unused.
 
@@ -202,6 +211,8 @@ Balloon Alert / Floating Text defines
 #define NON_PSYDON_PATRONS list(/datum/patron/divine/undivided, /datum/patron/divine/astrata, /datum/patron/divine/noc, /datum/patron/divine/dendor, /datum/patron/divine/abyssor, /datum/patron/divine/ravox, /datum/patron/divine/necra, /datum/patron/divine/xylix, /datum/patron/divine/pestra, /datum/patron/divine/malum, /datum/patron/divine/eora, /datum/patron/inhumen/zizo, /datum/patron/inhumen/graggar, /datum/patron/inhumen/matthios, /datum/patron/inhumen/baotha)	//For lord/heir usage
 
 #define ALL_PATRONS  list(/datum/patron/divine/undivided, /datum/patron/divine/astrata, /datum/patron/divine/noc, /datum/patron/divine/dendor, /datum/patron/divine/abyssor, /datum/patron/divine/ravox, /datum/patron/divine/necra, /datum/patron/divine/xylix, /datum/patron/divine/pestra, /datum/patron/divine/malum, /datum/patron/divine/eora, /datum/patron/old_god, /datum/patron/inhumen/zizo, /datum/patron/inhumen/graggar, /datum/patron/inhumen/matthios, /datum/patron/inhumen/baotha)
+
+#define ALL_SLAYER_PATRONS list(/datum/patron/divine/malum, /datum/patron/divine/ravox)
 
 #define PLATEHIT "plate"
 #define CHAINHIT "chain"
@@ -310,8 +321,6 @@ GLOBAL_LIST_EMPTY(round_join_times)
 #define CTAG_NIGHTMAIDEN	"CAT_NIGHTMAIDEN"	// Bathhouse Attendant's aesthetic choices.
 
 // List of mono-class categories. Only here for standardisation sake, but can be added on if desired.
-#define CTAG_DUNGEONEER		"CAT_DUNGEONEER"
-
 #define CTAG_BISHOP			"CAT_BISHOP"
 #define CTAG_MARTYR			"CAT_MARTYR"
 #define CTAG_ACOLYTE		"CAT_ACOLYTE"

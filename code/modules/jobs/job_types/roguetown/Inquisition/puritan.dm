@@ -17,13 +17,15 @@
 	display_order = JDO_PURITAN
 	advclass_cat_rolls = list(CTAG_PURITAN = 20)
 	give_bank_account = 30
-	min_pq = 10
+	min_pq = 18
 	max_pq = null
 	round_contrib_points = 2
 	job_subclasses = list(
 		/datum/advclass/puritan/inspector,
-		/datum/advclass/puritan/ordinator
+		/datum/advclass/puritan/ordinator,
+    	/datum/advclass/puritan/blackpowder
 	)
+	same_job_respawn_delay = 30 MINUTES
 
 /datum/job/roguetown/puritan/after_spawn(mob/living/H, mob/M, latejoin = TRUE)
 	..()
@@ -132,22 +134,22 @@
 	var/weapon_choice = input(H,"FLOURISH YOUR SILVER.", "WIELD THEM IN HIS NAME.") as anything in weapons
 	switch(weapon_choice)
 		if("Psydonic Longsword")
-			H.put_in_hands(new /obj/item/rogueweapon/sword/long/psysword/preblessed(H), TRUE)
+			H.put_in_hands(new /obj/item/rogueweapon/sword/long/psysword/preblessed(H))
 			H.equip_to_slot_or_del(new /obj/item/rogueweapon/scabbard/sword, SLOT_BELT_L, TRUE)
 			H.adjust_skillrank_up_to(/datum/skill/combat/swords, 4, TRUE)
 		if("Psydonic Rapier")
-			H.put_in_hands(new /obj/item/rogueweapon/sword/rapier/psy/preblessed(H), TRUE)
+			H.put_in_hands(new /obj/item/rogueweapon/sword/rapier/psy/preblessed(H))
 			H.equip_to_slot_or_del(new /obj/item/rogueweapon/scabbard/sword, SLOT_BELT_L, TRUE)
 			H.adjust_skillrank_up_to(/datum/skill/combat/swords, 4, TRUE)
 		if("Daybreak (Whip)")
-			H.put_in_hands(new /obj/item/rogueweapon/whip/antique/psywhip(H), TRUE)
+			H.put_in_hands(new /obj/item/rogueweapon/whip/antique/psywhip(H))
 			H.adjust_skillrank_up_to(/datum/skill/combat/whipsflails, 4, TRUE)
 		if("Stigmata (Halberd)")
-			H.put_in_hands(new /obj/item/rogueweapon/halberd/psyhalberd/relic(H), TRUE)
-			H.put_in_hands(new /obj/item/rogueweapon/scabbard/gwstrap(H), TRUE)
+			H.put_in_hands(new /obj/item/rogueweapon/halberd/psyhalberd/relic(H))
+			H.put_in_hands(new /obj/item/rogueweapon/scabbard/gwstrap(H))
 			H.adjust_skillrank_up_to(/datum/skill/combat/polearms, 4, TRUE)
 		if("Eucharist (Rapier)")
-			H.put_in_hands(new /obj/item/rogueweapon/sword/rapier/psy/relic(H), TRUE)
+			H.put_in_hands(new /obj/item/rogueweapon/sword/rapier/psy/relic(H))
 			H.equip_to_slot_or_del(new /obj/item/rogueweapon/scabbard/sword, SLOT_BELT_L, TRUE)
 			H.adjust_skillrank_up_to(/datum/skill/combat/swords, 4, TRUE)
 
@@ -221,29 +223,29 @@
 	var/weapon_choice = input(H,"CHOOSE YOUR RELIQUARY PIECE.", "WIELD THEM IN HIS NAME.") as anything in weapons
 	switch(weapon_choice)
 		if("Psydonic Broadsword + Dagger")
-			H.put_in_hands(new /obj/item/rogueweapon/sword/long/kriegmesser/psy/preblessed(H), TRUE)
-			H.put_in_hands(new /obj/item/rogueweapon/huntingknife/idagger/silver/psydagger(H), TRUE)
+			H.put_in_hands(new /obj/item/rogueweapon/sword/long/kriegmesser/psy/preblessed(H))
+			H.put_in_hands(new /obj/item/rogueweapon/huntingknife/idagger/silver/psydagger(H))
 			H.equip_to_slot_or_del(new /obj/item/rogueweapon/scabbard/sword, SLOT_BACK_R, TRUE)
 			H.equip_to_slot_or_del(new /obj/item/rogueweapon/scabbard/sheath, SLOT_BELT_L, TRUE)
 			H.adjust_skillrank_up_to(/datum/skill/combat/swords, 5, TRUE)
 			H.adjust_skillrank_up_to(/datum/skill/combat/knives, 4, TRUE)
 		if("Psydonic Poleaxe + Dagger")
-			H.put_in_hands(new /obj/item/rogueweapon/greataxe/psy/preblessed(H), TRUE)
-			H.put_in_hands(new /obj/item/rogueweapon/huntingknife/idagger/silver/psydagger(H), TRUE)
+			H.put_in_hands(new /obj/item/rogueweapon/greataxe/psy/preblessed(H))
+			H.put_in_hands(new /obj/item/rogueweapon/huntingknife/idagger/silver/psydagger(H))
 			H.equip_to_slot_or_del(new /obj/item/rogueweapon/scabbard/gwstrap, SLOT_BELT_L, TRUE)
 			H.equip_to_slot_or_del(new /obj/item/rogueweapon/scabbard/sheath, SLOT_BELT_L, TRUE)
 			H.adjust_skillrank_up_to(/datum/skill/combat/axes, 5, TRUE)
 			H.adjust_skillrank_up_to(/datum/skill/combat/knives, 4, TRUE)
 		if("Apocrypha (Greatsword) + Dagger")
-			H.put_in_hands(new /obj/item/rogueweapon/greatsword/psygsword/relic(H), TRUE)
-			H.put_in_hands(new /obj/item/rogueweapon/huntingknife/idagger/silver/psydagger(H), TRUE)
+			H.put_in_hands(new /obj/item/rogueweapon/greatsword/psygsword/relic(H))
+			H.put_in_hands(new /obj/item/rogueweapon/huntingknife/idagger/silver/psydagger(H))
 			H.equip_to_slot_or_del(new /obj/item/rogueweapon/scabbard/gwstrap, SLOT_BACK_R, TRUE)
 			H.equip_to_slot_or_del(new /obj/item/rogueweapon/scabbard/sheath, SLOT_BELT_L, TRUE)
 			H.adjust_skillrank_up_to(/datum/skill/combat/swords, 5, TRUE)
 			H.adjust_skillrank_up_to(/datum/skill/combat/knives, 4, TRUE)
 		if("Covenant And Creed (Broadsword + Shield)")
-			H.put_in_hands(new /obj/item/rogueweapon/greatsword/bsword/psy/relic(H), TRUE)
-			H.put_in_hands(new /obj/item/paper/inqslip/arrival/inq(H), TRUE)
+			H.put_in_hands(new /obj/item/rogueweapon/greatsword/bsword/psy/relic(H))
+			H.put_in_hands(new /obj/item/paper/inqslip/arrival/inq(H))
 			H.equip_to_slot_or_del(new /obj/item/rogueweapon/shield/tower/metal/psy, SLOT_BACK_R, TRUE)
 			var/annoyingbag = H.get_item_by_slot(SLOT_BACK_L)
 			qdel(annoyingbag)
@@ -252,7 +254,7 @@
 			H.adjust_skillrank_up_to(/datum/skill/combat/swords, 5, TRUE)
 			H.adjust_skillrank_up_to(/datum/skill/combat/shields, 4, TRUE)
 		if("Covenant and Consecratia (Flail + Shield)")
-			H.put_in_hands(new /obj/item/rogueweapon/flail/sflail/psyflail/relic(H), TRUE)
+			H.put_in_hands(new /obj/item/rogueweapon/flail/sflail/psyflail/relic(H))
 			H.equip_to_slot_or_del(new /obj/item/rogueweapon/shield/tower/metal/psy, SLOT_BACK_R, TRUE)
 			H.adjust_skillrank_up_to(/datum/skill/combat/whipsflails, 5, TRUE)
 			H.adjust_skillrank_up_to(/datum/skill/combat/shields, 4, TRUE)

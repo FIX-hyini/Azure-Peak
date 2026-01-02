@@ -36,11 +36,11 @@
 			playsound(loc, get_armor_sound(used.blocksound, blade_dulling), 100)
 		var/intdamage = damage
 		// Penetrative damage deals significantly less to the armor. Tentative.
-		if((damage + armor_penetration) > protection)
+		if((damage + armor_penetration) > protection && d_type != "blunt")
 			intdamage = (damage + armor_penetration) - protection
 		if(intdamfactor != 1)
 			intdamage *= intdamfactor
-		if(d_type == "blunt")
+		if(d_type == "blunt" && mind)
 			if(used.armor?.getRating("blunt") > 0)
 				var/bluntrating = used.armor.getRating("blunt")
 				intdamage -= intdamage * ((bluntrating / 2) / 100)	//Half of the blunt rating reduces blunt damage taken by %-age.
@@ -50,13 +50,18 @@
 			if(bless.is_blessed)
 				// Apply multiplier if the blessing is active.
 				intdamage = round(intdamage * bless.cursed_item_intdamage)
+		var/tempo_bonus = get_tempo_bonus(TEMPO_TAG_ARMOR_INTEGFACTOR)
+		if(tempo_bonus)
+			intdamage *= tempo_bonus
 		used.take_damage(intdamage, damage_flag = d_type, sound_effect = FALSE, armor_penetration = 100)
 	if(physiology)
 		protection += physiology.armor.getRating(d_type)
 	return protection
 
-/mob/living/carbon/human/proc/checkcritarmor(def_zone, d_type)
-	if(!d_type)
+/mob/living/carbon/human/proc/checkcritarmor(def_zone, bclass)
+	if(!bclass)
+		return FALSE
+	if(bclass == BCLASS_PIERCE)
 		return FALSE
 	if(isbodypart(def_zone))
 		var/obj/item/bodypart/CBP = def_zone
@@ -69,9 +74,14 @@
 			var/obj/item/clothing/C = bp
 			if(zone2covered(def_zone, C.body_parts_covered_dynamic))
 				if(C.obj_integrity > 1)
-					if(d_type in C.prevent_crits)
-						return TRUE
-
+					switch(C.prevent_crits)
+						if(PREVENT_CRITS_NONE)
+							return FALSE
+						if(PREVENT_CRITS_ALL)
+							return TRUE
+						if(PREVENT_CRITS_MOST)
+							if(bclass != BCLASS_PICK)
+								return TRUE
 /*
 /mob/proc/checkwornweight()
 	return 0
@@ -189,8 +199,6 @@
 			return spec_return
 	var/obj/item/I
 	var/throwpower = 30
-	if(has_status_effect(/datum/status_effect/buff/clash))
-		bad_guard(span_warning("The thrown object ruins my focus!"))
 	if(istype(AM, /obj/item))
 		I = AM
 		throwpower = I.throwforce
@@ -203,7 +211,23 @@
 		hitpush = FALSE
 		skipcatch = TRUE
 		blocked = TRUE
-	else if(I)
+
+	//Thrown item deflection -- this RETURNS if successful!
+	var/obj/item/W = get_active_held_item()
+	if(!blocked && I && cmode && mind)
+		if(W && get_dir(src, AM) == turn(get_dir(AM, src), 180))	//We are directly facing the thrown item.
+			var/diceroll = (get_skill_level(W.associated_skill)) * 10
+			if(projectile_parry_timer > world.time)
+				diceroll *= 2
+			diceroll = min(diceroll, 90)
+			if(prob(diceroll))
+				var/turf/current_turf = get_turf(I)
+				I.get_deflected(src)
+				do_sparks(2, TRUE, current_turf)
+				visible_message(span_warning("[src] deflects \the [I]!"))
+				return
+
+	if(I && !blocked)
 		if(((throwingdatum ? throwingdatum.speed : I.throw_speed) >= EMBED_THROWSPEED_THRESHOLD) || I.embedding.embedded_ignore_throwspeed_threshold)
 			if(can_embed(I) && prob(I.embedding.embed_chance) && !HAS_TRAIT(src, TRAIT_PIERCEIMMUNE))
 				//throw_alert("embeddedobject", /atom/movable/screen/alert/embeddedobject)
@@ -329,7 +353,7 @@
 		var/nodmg = FALSE
 		if(!apply_damage(damage, M.melee_damage_type, affecting, armor))
 			nodmg = TRUE
-			next_attack_msg += " <span class='warning'>Armor stops the damage.</span>"
+			next_attack_msg += VISMSG_ARMOR_BLOCKED
 		else
 			SEND_SIGNAL(M, COMSIG_MOB_AFTERATTACK_SUCCESS, src)
 			affecting.bodypart_attacked_by(M.a_intent.blade_class, damage - armor, M, dam_zone, crit_message = TRUE)
@@ -777,6 +801,12 @@
 	var/obj/item/clothing/used
 	if(def_zone == BODY_ZONE_TAUR)
 		def_zone = pick(BODY_ZONE_L_LEG, BODY_ZONE_R_LEG)
+	else if(get_taur_tail())
+		switch(def_zone)
+			if(BODY_ZONE_PRECISE_L_FOOT)
+				def_zone = BODY_ZONE_L_LEG
+			if(BODY_ZONE_PRECISE_R_FOOT)
+				def_zone = BODY_ZONE_R_LEG
 	var/list/body_parts = list(skin_armor, head, wear_mask, wear_wrists, gloves, wear_neck, cloak, wear_armor, wear_shirt, shoes, wear_pants, backr, backl, belt, s_store, glasses, ears, wear_ring) //Everything but pockets. Pockets are l_store and r_store. (if pockets were allowed, putting something armored, gloves or hats for example, would double up on the armor)
 	for(var/bp in body_parts)
 		if(!bp)

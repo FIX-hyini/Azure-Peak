@@ -19,10 +19,11 @@
 	outfit = /datum/outfit/job/roguetown/bogguardsman
 	advclass_cat_rolls = list(CTAG_WARDEN = 20)
 
-	give_bank_account = 16
-	min_pq = 0
+	give_bank_account = TRUE
+	min_pq = 3
 	max_pq = null
 	round_contrib_points = 2
+	same_job_respawn_delay = 30 MINUTES
 
 	cmode_music = 'sound/music/cmode/garrison/combat_warden.ogg'
 	job_traits = list(TRAIT_OUTDOORSMAN, TRAIT_WOODSMAN, TRAIT_SURVIVAL_EXPERT)
@@ -35,6 +36,7 @@
 	armor = /obj/item/clothing/suit/roguetown/armor/leather/studded/warden
 	cloak = /obj/item/clothing/cloak/wardencloak
 	shoes = /obj/item/clothing/shoes/roguetown/boots/leather/reinforced
+	saiga_shoes = /obj/item/clothing/shoes/roguetown/horseshoes
 	belt = /obj/item/storage/belt/rogue/leather
 	backr = /obj/item/storage/backpack/rogue/satchel
 	wrists = /obj/item/clothing/wrists/roguetown/bracers/leather
@@ -54,7 +56,7 @@
 	)
 	subclass_skills = list(
 		/datum/skill/combat/bows = SKILL_LEVEL_EXPERT,
-		/datum/skill/combat/slings = SKILL_LEVEL_EXPERT, 
+		/datum/skill/combat/slings = SKILL_LEVEL_EXPERT,
 		/datum/skill/combat/crossbows = SKILL_LEVEL_JOURNEYMAN,
 		/datum/skill/combat/wrestling = SKILL_LEVEL_APPRENTICE,
 		/datum/skill/combat/unarmed = SKILL_LEVEL_APPRENTICE,
@@ -82,7 +84,7 @@
 	pants = /obj/item/clothing/under/roguetown/trou/leather
 	backl = /obj/item/gun/ballistic/revolver/grenadelauncher/bow/recurve/warden
 	beltr = /obj/item/quiver/arrows
-	beltl = /obj/item/rogueweapon/huntingknife/idagger/steel
+	beltl = /obj/item/rogueweapon/huntingknife/idagger/warden_machete
 	backpack_contents = list(
 		/obj/item/storage/keyring/guard = 1,
 		/obj/item/flashlight/flare/torch/lantern = 1,
@@ -99,6 +101,7 @@
 			"Path of the Volf"		= /obj/item/clothing/head/roguetown/helmet/sallet/warden/wolf,
 			"Path of the Ram"		= /obj/item/clothing/head/roguetown/helmet/sallet/warden/goat,
 			"Path of the Bear"		= /obj/item/clothing/head/roguetown/helmet/sallet/warden/bear,
+			"Path of the Rous"		= /obj/item/clothing/head/roguetown/helmet/sallet/warden/rat,
 			"None"
 		)
 		var/helmchoice = input(H, "Choose your Path.", "HELMET SELECTION") as anything in helmets
@@ -111,8 +114,10 @@
 			"None"
 		)
 		var/hoodchoice = input(H, "Choose your Shroud.", "HOOD SELECTION") as anything in hoods
-		if(helmchoice != "None")
+		if(hoodchoice != "None")
 			mask = hoods[hoodchoice]
+	if(H.mind)
+		SStreasury.give_money_account(ECONOMIC_LOWER_MIDDLE_CLASS, H, "Savings.")
 
 /datum/advclass/bogguardsman/forester
 	name = "Forester"
@@ -189,3 +194,5 @@
 		var/hoodchoice = input(H, "Choose your Shroud.", "HOOD SELECTION") as anything in hoods
 		if(helmchoice != "None")
 			mask = hoods[hoodchoice]
+	if(H.mind)
+		SStreasury.give_money_account(ECONOMIC_LOWER_MIDDLE_CLASS, H, "Savings.")

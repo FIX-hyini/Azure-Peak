@@ -46,6 +46,10 @@
 #define span_cultlarge(str) ("<span class='cultlarge'>" + str + "</span>")
 #define span_cultsmall(str) ("<span class='cultsmall'>" + str + "</span>")
 #define span_danger(str) ("<span class='danger'>" + str + "</span>")
+#define span_combatprimary(str) ("<span class='combatprimary'>" + str + "</span>")
+#define span_combatsecondary(str) ("<span class='combatsecondary'>" + str + "</span>")
+#define span_combatsecondarybp(str) ("<span class='combatsecondarybodypart'>" + str + "</span>")
+#define span_combatsecondarysmall(str) ("<span class ='combatsecondarysmall'>" + str + "</span>")
 #define span_dead(str) ("<span class='dead'>" + str + "</span>")
 #define span_deadsay(str) ("<span class='deadsay'>" + str + "</span>")
 #define span_deadsayitalicsbold(str) ("<span class='deadsayitalicsbold'>" + str + "</span>")
@@ -85,6 +89,7 @@
 #define span_linkon(str) ("<span class='linkon'>" + str + "</span>")
 #define span_looc(str) ("<span class='looc'>" + str + "</span>")
 #define span_love(str) ("<span class='love'>" + str + "</span>")
+#define span_lovebold(str) ("<span class='lovebold'>" + str + "</span>")
 #define span_marooned(str) ("<span class='marooned'>" + str + "</span>")
 #define span_medal(str) ("<span class='medal'>" + str + "</span>")
 #define span_medradio(str) ("<span class='medradio'>" + str + "</span>")
@@ -162,3 +167,15 @@
 #define span_beautiful_fem(str) ("<span class='beautifulfem'>" + str + "</span>")
 #define span_beautiful_nb(str) ("<span class='beautifulnb'>" + str + "</span>")
 #define span_orator(str) ("<span class='orator'>" + str + "</span>")
+
+/// Displays a tooltip. Tooltip is text-only, and HTML will be ignored.
+/// * SPAN_LINKIFY doesn't work here.
+#define SPAN_TOOLTIP(tip, str) ("<span data-component=\"Tooltip\" data-content=\"[html_encode(tip)]\" class=\"tooltip\">[str]</span>")
+/// Displays a tooltip. Accepts HTML. For the love of all that is holy, ensure input is trusted.
+/// * SPAN_LINKIFY doesn't work here.
+#define SPAN_TOOLTIP_DANGEROUS_HTML(tip, str) ("<span data-component=\"TooltipHTML\" data-html=\"[html_encode(tip)]\" class=\"tooltip\">[str]</span>")
+
+/* Complex Spans */
+// Ones where span_X isn't just the class
+
+#define span_admin_log(str) ("<span class='admin'><span class='prefix'>ADMIN LOG: </span><span class='message linkify'>" + str + "</span></span>")

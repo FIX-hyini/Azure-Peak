@@ -70,6 +70,7 @@
 		/datum/customizer/bodypart_feature/accessory,
 		/datum/customizer/bodypart_feature/face_detail,
 		/datum/customizer/bodypart_feature/underwear,
+		/datum/customizer/bodypart_feature/legwear,
 		/datum/customizer/organ/snout/anthro/dullahan,
 		/datum/customizer/organ/horns/demihuman,
 		/datum/customizer/organ/wings/anthro,
@@ -86,20 +87,30 @@
 	body_marking_sets = list(
 		/datum/body_marking_set/none,
 		/datum/body_marking_set/belly,
-		/datum/body_marking_set/socks,
+		/datum/body_marking_set/bellysocks,
 		/datum/body_marking_set/tiger,
 		/datum/body_marking_set/tiger_dark,
+		/datum/body_marking_set/gradient,
 	)
 	body_markings = list(
 		/datum/body_marking/flushed_cheeks,
 		/datum/body_marking/eyeliner,
-		/datum/body_marking/tonage,
+		/datum/body_marking/plain,
+		/datum/body_marking/belly,
+		/datum/body_marking/bellyslim,
+		/datum/body_marking/butt,
+		/datum/body_marking/sock,
 		/datum/body_marking/socklonger,
 		/datum/body_marking/tips,
+		/datum/body_marking/backspots,
+		/datum/body_marking/front,
+		/datum/body_marking/tonage,
 		/datum/body_marking/nose,
+		/datum/body_marking/harlequin,
+		/datum/body_marking/harlequinreversed,
 		/datum/body_marking/bangs,
 		/datum/body_marking/bun,
-		/datum/body_marking/plain,
+		/datum/body_marking/gradient,
 	)
 	descriptor_choices = list(
 		/datum/descriptor_choice/trait,
@@ -231,7 +242,8 @@
 	..()
 	RegisterSignal(user, COMSIG_MOB_SAY, PROC_REF(handle_speech))
 	RegisterSignal(user, COMSIG_MOB_SAY_POSTPROCESS, PROC_REF(on_say_postprocess))
-	RegisterSignal(user, COMSIG_ERP_LOCATION_ACCESSIBLE, PROC_REF(on_erp_location_accessible))
+	// TODO SEXCON2: Re-enable Dullahan detached head ERP support
+	//RegisterSignal(user, COMSIG_ERP_LOCATION_ACCESSIBLE, PROC_REF(on_erp_location_accessible))
 	RegisterSignal(user, COMSIG_LIVING_REVIVE, PROC_REF(on_aheal))
 	my_head = user.get_bodypart(BODY_ZONE_HEAD)
 	RegisterSignal(my_head, COMSIG_QDELETING, PROC_REF(on_head_destroyed))
@@ -241,7 +253,7 @@
 
 	UnregisterSignal(user, COMSIG_MOB_SAY)
 	UnregisterSignal(user, COMSIG_MOB_SAY_POSTPROCESS)
-	UnregisterSignal(user, COMSIG_ERP_LOCATION_ACCESSIBLE)
+	//UnregisterSignal(user, COMSIG_ERP_LOCATION_ACCESSIBLE) // TODO SEXCON2
 	if(my_head.owner ~= user)
 		// Give their head back instead?
 		// In TG Dullahan heads are always off, thus they give back heads.
@@ -284,7 +296,7 @@
 		mob_light_obj = user.mob_light(soul_accessory.accessory_colors, 2, 2)
 
 /datum/species/dullahan/proc/soul_light_off()
-	qdel(mob_light_obj)
+	QDEL_NULL(mob_light_obj)
 
 /datum/species/dullahan/proc/on_say_postprocess(datum/source, list/speech_args)
 	var/mob/living/carbon/human/human = my_head.original_owner
@@ -305,6 +317,8 @@
 	my_head.say(speech_args[SPEECH_MESSAGE], spans = speech_args[SPEECH_SPANS], sanitize = FALSE, message_range = message_range, message_mode = speech_args[SPEECH_MODE])
 	speech_args[SPEECH_MESSAGE] = ""
 
+// TODO SEXCON2: Reimplement for sexcon2 system
+/*
 /datum/species/dullahan/proc/on_erp_location_accessible(datum/source, list/check_args)
 	// Allows Dullahan heads but not necro.
 	var/obj/item/bodypart/bodypart = check_args[ERP_BODYPART]
@@ -343,6 +357,7 @@
 		success_flags |= SKIP_GRAB_CHECK
 
 	return success_flags
+*/
 
 /datum/species/dullahan/proc/get_nodrop_head()
 	var/obj/item/bodypart/head/dullahan/head = my_head

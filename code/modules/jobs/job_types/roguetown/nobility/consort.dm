@@ -15,11 +15,12 @@
 	outfit = /datum/outfit/job/roguetown/lady
 
 	display_order = JDO_LADY
-	give_bank_account = 50
+	give_bank_account = TRUE
 	noble_income = 22
 	min_pq = 5
 	max_pq = null
 	round_contrib_points = 3
+	same_job_respawn_delay = 30 MINUTES
 
 /datum/job/roguetown/exlady
 	title = "Consort Dowager"
@@ -76,6 +77,7 @@
 		beltr = /obj/item/storage/belt/rogue/pouch/coins/rich
 		backr = /obj/item/storage/backpack/rogue/satchel
 		id = /obj/item/clothing/ring/silver
+	saiga_shoes = /obj/item/clothing/shoes/roguetown/horseshoes/gold
 	H.adjust_skillrank(/datum/skill/misc/stealing, 4, TRUE)
 	H.adjust_skillrank(/datum/skill/misc/sneaking, 3, TRUE)
 	H.adjust_skillrank(/datum/skill/combat/knives, 3, TRUE)
@@ -90,6 +92,8 @@
 	H.change_stat(STATKEY_SPD, 2)
 	H.change_stat(STATKEY_PER, 2)
 	H.change_stat(STATKEY_LCK, 5)
+	if(H.mind)
+		SStreasury.give_money_account(ECONOMIC_RICH, H, "Savings.")
 
 /obj/effect/proc_holder/spell/self/convertrole/servant
 	name = "Recruit Servant"

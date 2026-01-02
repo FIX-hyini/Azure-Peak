@@ -40,12 +40,15 @@
 	var/ooc_notes = ""
 	var/ooc_notes_nsfw
 	var/headshot = ""
+	var/nsfw_headshot = ""
 	var/list/img_gallery = list()
 	var/char_name
 	var/song_url
 	var/has_song = FALSE
 	var/is_vet = FALSE
 	var/is_naked = FALSE
+	var/datum/antagonist/vampire/vampireplayer = user.mind?.has_antag_datum(/datum/antagonist/vampire)
+	var/datum/antagonist/lich/lichplayer = user.mind?.has_antag_datum(/datum/antagonist/lich)
 
 	if(ishuman(holder))
 		var/mob/living/carbon/human/holder_human = holder
@@ -58,11 +61,16 @@
 		ooc_notes_nsfw += holder.erpprefs
 		char_name = holder.name
 		song_url = holder.ooc_extra
-		is_vet = holder.check_agevet()
 		if(!obscured)
-			headshot += holder.headshot_link
+			if(vampireplayer && (!SEND_SIGNAL(holder, COMSIG_DISGUISE_STATUS))&& !isnull(holder.vampire_headshot_link)) //vampire with their disguise down and a valid headshot
+				headshot = holder.vampire_headshot_link
+			else if (lichplayer && !isnull(holder.lich_headshot_link))//Lich with a valid headshot
+				headshot = holder.lich_headshot_link
+			else
+				headshot = holder.headshot_link
+			nsfw_headshot += holder.nsfw_headshot_link
 			img_gallery = holder.img_gallery
-		if(!holder.headshot_link)
+		if(!headshot)
 			headshot = "headshot_red.png"
 
 	else if(pref)
@@ -72,11 +80,16 @@
 		flavor_text_nsfw = pref.nsfwflavortext
 		ooc_notes = pref.ooc_notes
 		ooc_notes_nsfw = pref.erpprefs
-		headshot = pref.headshot_link
+		if(vampireplayer && (!SEND_SIGNAL(pref, COMSIG_DISGUISE_STATUS))&& !isnull(pref.vampire_headshot_link)) //vampire with their disguise down and a valid headshot
+			headshot = pref.vampire_headshot_link
+		else if (lichplayer && !isnull(pref.lich_headshot_link))//Lich with a valid headshot
+			headshot = pref.lich_headshot_link
+		else
+			headshot = pref.headshot_link
+		nsfw_headshot = pref.nsfw_headshot_link
 		img_gallery = pref.img_gallery
 		char_name = pref.real_name
 		song_url = pref.ooc_extra
-		is_vet = viewing.check_agevet()
 		if(!headshot)
 			headshot = "headshot_red.png"
 	
@@ -103,6 +116,7 @@
 		// Descriptions, but requiring manual input to see
 		"flavor_text_nsfw" = flavor_text_nsfw,
 		"ooc_notes_nsfw" = ooc_notes_nsfw,
+		"nsfw_headshot" = nsfw_headshot,
 		"img_gallery" = img_gallery,
 		"is_playing" = is_playing,
 		"has_song" = has_song,

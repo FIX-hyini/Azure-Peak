@@ -15,11 +15,12 @@
 	outfit = /datum/outfit/job/roguetown/knight
 	advclass_cat_rolls = list(CTAG_ROYALGUARD = 20)
 	job_traits = list(TRAIT_NOBLE, TRAIT_STEELHEARTED, TRAIT_GOODTRAINER, TRAIT_GUARDSMAN)
-	give_bank_account = 22
+	give_bank_account = TRUE
 	noble_income = 10
-	min_pq = 8
+	min_pq = 10
 	max_pq = null
 	round_contrib_points = 2
+	same_job_respawn_delay = 30 MINUTES
 
 	cmode_music = 'sound/music/combat_knight.ogg'
 
@@ -37,21 +38,23 @@
 	..()
 	if(ishuman(L))
 		var/mob/living/carbon/human/H = L
-		if(istype(H.cloak, /obj/item/clothing/cloak/tabard/retinue))
+	/*	if(istype(H.cloak, /obj/item/clothing/cloak)) //TA EDIT
 			var/obj/item/clothing/S = H.cloak
 			var/index = findtext(H.real_name, " ")
 			if(index)
 				index = copytext(H.real_name, 1,index)
 			if(!index)
 				index = H.real_name
-			S.name = "knight's tabard ([index])"
+			S.name = "[S.name] ([index])" */
 		var/prev_real_name = H.real_name
 		var/prev_name = H.name
 		var/honorary = "Ser"
 		if(should_wear_femme_clothes(H))
 			honorary = "Dame"
-		H.real_name = "[honorary] [prev_real_name]"
-		H.name = "[honorary] [prev_name]"
+		// check if they already have it to avoid stacking titles
+		if(findtextEx(H.real_name, "[honorary] ") == 0)
+			H.real_name = "[honorary] [prev_real_name]"
+			H.name = "[honorary] [prev_name]"
 
 		for(var/X in peopleknowme)
 			for(var/datum/mind/MF in get_minds(X))
@@ -59,8 +62,19 @@
 					MF.known_people -= prev_real_name
 					H.mind.person_knows_me(MF)
 
+/datum/outfit/job/roguetown/knight/post_equip(mob/living/carbon/human/H)  //TA EDIT
+	..()
+	if(istype(H.cloak, /obj/item/clothing/cloak))
+		var/obj/item/clothing/S = H.cloak
+		var/index = findtext(H.name_archive, " ")
+		if(index)
+			index = copytext(H.name_archive, 1,index)
+		if(!index)
+			index = H.name
+		S.name = "[S.name] ([index])" //TA EDIT
+
 /datum/outfit/job/roguetown/knight
-	cloak = /obj/item/clothing/cloak/tabard/retinue
+	//cloak = /obj/item/clothing/cloak/tabard/stabard/surcoat/guard
 	neck = /obj/item/clothing/neck/roguetown/bevor
 	gloves = /obj/item/clothing/gloves/roguetown/plate
 	wrists = /obj/item/clothing/wrists/roguetown/bracers
@@ -84,8 +98,7 @@
 		STATKEY_STR = 3,//Heavy hitters. Less con/end, high strength.
 		STATKEY_INT = 3,
 		STATKEY_CON = 1,
-		STATKEY_WIL = 1,
-		STATKEY_SPD = -1
+		STATKEY_WIL = 1
 	)
 	subclass_skills = list(
 		/datum/skill/combat/polearms = SKILL_LEVEL_EXPERT, //Polearms are pretty much explicitly a two-handed weapon, so I gave them a polearm option.
@@ -98,13 +111,14 @@
 		/datum/skill/misc/climbing = SKILL_LEVEL_JOURNEYMAN,
 		/datum/skill/misc/reading = SKILL_LEVEL_APPRENTICE,
 		/datum/skill/misc/athletics = SKILL_LEVEL_JOURNEYMAN,
+		/datum/skill/misc/swimming = SKILL_LEVEL_APPRENTICE, //This is not saving them considering plate but funny either way.
 		/datum/skill/combat/knives = SKILL_LEVEL_JOURNEYMAN,
 		/datum/skill/misc/tracking = SKILL_LEVEL_APPRENTICE,
 	)
 
 /datum/outfit/job/roguetown/knight/heavy/pre_equip(mob/living/carbon/human/H)
 	..()
-	H.dna.species.soundpack_m = new /datum/voicepack/male/knight()	
+	H.dna.species.soundpack_m = new /datum/voicepack/male/knight()
 	H.verbs |= /mob/proc/haltyell
 
 	H.adjust_blindness(-3)
@@ -153,21 +167,31 @@
 		var/helmchoice = input(H, "Choose your Helm.", "TAKE UP HELMS") as anything in helmets
 		if(helmchoice != "None")
 			head = helmets[helmchoice]
-
+    
 		var/armors = list(
 			"Brigandine"		= /obj/item/clothing/suit/roguetown/armor/brigandine/retinue,
 			"Coat of Plates"	= /obj/item/clothing/suit/roguetown/armor/brigandine/coatplates,
-			"Steel Cuirass"		= /obj/item/clothing/suit/roguetown/armor/plate/half,
-			"Fluted Cuirass"	= /obj/item/clothing/suit/roguetown/armor/plate/half/fluted,
+			"Steel Cuirass"		= /obj/item/clothing/suit/roguetown/armor/plate/cuirass,
+			"Fluted Cuirass"	= /obj/item/clothing/suit/roguetown/armor/plate/cuirass/fluted,
 		)
 		var/armorchoice = input(H, "Choose your armor.", "TAKE UP ARMOR") as anything in armors
 		armor = armors[armorchoice]
 
+		var/heraldy = list(
+				"Surcoat" 	= /obj/item/clothing/cloak/tabard/stabard/guard,
+				"Tabard"		= /obj/item/clothing/cloak/tabard/knight,
+				"Jupon"		= /obj/item/clothing/cloak/tabard/stabard/surcoat/guard,
+				)
+		var/heraldychoice = input("Choose your heraldy.", "RAISE UP THE BANNER") as anything in heraldy
+		cloak = heraldy[heraldychoice]
+ 
 	backpack_contents = list(
-		/obj/item/rogueweapon/huntingknife/idagger/steel/special = 1, 
-		/obj/item/rope/chain = 1, 
+		/obj/item/rogueweapon/huntingknife/idagger/steel/special = 1,
+		/obj/item/rope/chain = 1,
 		/obj/item/rogueweapon/scabbard/sheath = 1
 	)
+	if(H.mind)
+		SStreasury.give_money_account(ECONOMIC_UPPER_CLASS, H, "Savings.")
 
 /datum/advclass/knight/footknight
 	name = "Foot Knight"
@@ -179,20 +203,22 @@
 	subclass_stats = list(
 		STATKEY_STR = 1,//Tanky, less strength, but high con/end.
 		STATKEY_INT = 1,
-		STATKEY_CON = 3,
+		STATKEY_CON = 4,//If mercenaries can have this...
 		STATKEY_WIL = 3,
+		STATKEY_PER = 1
 	)
 	subclass_skills = list(
 		/datum/skill/combat/swords = SKILL_LEVEL_EXPERT,
 		/datum/skill/combat/whipsflails = SKILL_LEVEL_EXPERT,
-		/datum/skill/combat/maces = SKILL_LEVEL_EXPERT, 
+		/datum/skill/combat/maces = SKILL_LEVEL_EXPERT,
 		/datum/skill/combat/shields = SKILL_LEVEL_EXPERT,
-		/datum/skill/misc/riding = SKILL_LEVEL_APPRENTICE,	
+		/datum/skill/misc/riding = SKILL_LEVEL_APPRENTICE,
 		/datum/skill/combat/wrestling = SKILL_LEVEL_EXPERT,
 		/datum/skill/combat/unarmed = SKILL_LEVEL_JOURNEYMAN,
 		/datum/skill/misc/climbing = SKILL_LEVEL_JOURNEYMAN,
 		/datum/skill/misc/reading = SKILL_LEVEL_APPRENTICE,
 		/datum/skill/misc/athletics = SKILL_LEVEL_JOURNEYMAN,
+		/datum/skill/misc/swimming = SKILL_LEVEL_APPRENTICE,
 		/datum/skill/combat/knives = SKILL_LEVEL_JOURNEYMAN,
 		/datum/skill/misc/tracking = SKILL_LEVEL_APPRENTICE,
 	)
@@ -218,7 +244,7 @@
 			if("Sabre")
 				beltl = /obj/item/rogueweapon/scabbard/sword
 				l_hand = /obj/item/rogueweapon/sword/sabre
-	
+
 	shirt = /obj/item/clothing/suit/roguetown/armor/chainmail
 	pants = /obj/item/clothing/under/roguetown/chainlegs
 	backl = /obj/item/rogueweapon/shield/tower/metal
@@ -243,17 +269,27 @@
 		var/armors = list(
 			"Brigandine"		= /obj/item/clothing/suit/roguetown/armor/brigandine/retinue,
 			"Coat of Plates"	= /obj/item/clothing/suit/roguetown/armor/brigandine/coatplates,
-			"Steel Cuirass"		= /obj/item/clothing/suit/roguetown/armor/plate/half,
-			"Fluted Cuirass"	= /obj/item/clothing/suit/roguetown/armor/plate/half/fluted,
+			"Steel Cuirass"		= /obj/item/clothing/suit/roguetown/armor/plate/cuirass,
+			"Fluted Cuirass"	= /obj/item/clothing/suit/roguetown/armor/plate/cuirass/fluted,
 		)
 		var/armorchoice = input(H, "Choose your armor.", "TAKE UP ARMOR") as anything in armors
 		armor = armors[armorchoice]
+    
+		var/heraldy = list(
+				"Surcoat" 	= /obj/item/clothing/cloak/tabard/stabard/guard,
+				"Tabard"		= /obj/item/clothing/cloak/tabard/knight,
+				"Jupon"		= /obj/item/clothing/cloak/tabard/stabard/surcoat/guard,
+				)
+		var/heraldychoice = input("Choose your heraldy.", "RAISE UP THE BANNER") as anything in heraldy
+		cloak = heraldy[heraldychoice]
 
 	backpack_contents = list(
-		/obj/item/rogueweapon/huntingknife/idagger/steel/special = 1, 
-		/obj/item/rope/chain = 1, 
+		/obj/item/rogueweapon/huntingknife/idagger/steel/special = 1,
+		/obj/item/rope/chain = 1,
 		/obj/item/rogueweapon/scabbard/sheath = 1
 	)
+	if(H.mind)
+		SStreasury.give_money_account(ECONOMIC_UPPER_CLASS, H, "Savings.")
 
 /datum/advclass/knight/mountedknight
 	name = "Mounted Knight"
@@ -267,9 +303,9 @@
 	//Decent all-around stats. Nothing spectacular. Ranged/melee hybrid class on horseback.
 	subclass_stats = list(
 		STATKEY_STR = 2,
-		STATKEY_INT = 1,
+		STATKEY_INT = 2,
 		STATKEY_CON = 1,
-		STATKEY_WIL = 1,
+		STATKEY_WIL = 2,
 		STATKEY_PER = 2
 	)
 	subclass_skills = list(
@@ -284,6 +320,7 @@
 		/datum/skill/misc/climbing = SKILL_LEVEL_JOURNEYMAN,
 		/datum/skill/misc/reading = SKILL_LEVEL_APPRENTICE,
 		/datum/skill/misc/athletics = SKILL_LEVEL_JOURNEYMAN,
+		/datum/skill/misc/swimming = SKILL_LEVEL_APPRENTICE,
 		/datum/skill/combat/knives = SKILL_LEVEL_JOURNEYMAN,
 		/datum/skill/misc/tracking = SKILL_LEVEL_JOURNEYMAN,
 	)
@@ -298,7 +335,7 @@
 		var/weapons = list(
 			"Longsword + Crossbow",
 			"Billhook + Recurve Bow",
-			"Grand Mace + Longbow", 
+			"Grand Mace + Longbow",
 			"Sabre + Recurve Bow",
 			"Lance + Kite Shield"
 		)
@@ -353,17 +390,27 @@
 		var/armors = list(
 			"Brigandine"		= /obj/item/clothing/suit/roguetown/armor/brigandine/retinue,
 			"Coat of Plates"	= /obj/item/clothing/suit/roguetown/armor/brigandine/coatplates,
-			"Steel Cuirass"		= /obj/item/clothing/suit/roguetown/armor/plate/half,
-			"Fluted Cuirass"	= /obj/item/clothing/suit/roguetown/armor/plate/half/fluted,
+			"Steel Cuirass"		= /obj/item/clothing/suit/roguetown/armor/plate/cuirass,
+			"Fluted Cuirass"	= /obj/item/clothing/suit/roguetown/armor/plate/cuirass/fluted,
 		)
 		var/armorchoice = input(H, "Choose your armor.", "TAKE UP ARMOR") as anything in armors
 		armor = armors[armorchoice]
+    
+		var/heraldy = list(
+				"Surcoat" 	= /obj/item/clothing/cloak/tabard/stabard/guard,
+				"Tabard"		= /obj/item/clothing/cloak/tabard/knight,
+				"Jupon"		= /obj/item/clothing/cloak/tabard/stabard/surcoat/guard,
+				)
+		var/heraldychoice = input("Choose your heraldy.", "RAISE UP THE BANNER") as anything in heraldy
+		cloak = heraldy[heraldychoice]
 
 	backpack_contents = list(
-		/obj/item/rogueweapon/huntingknife/idagger/steel/special = 1, 
-		/obj/item/rope/chain = 1, 
+		/obj/item/rogueweapon/huntingknife/idagger/steel/special = 1,
+		/obj/item/rope/chain = 1,
 		/obj/item/rogueweapon/scabbard/sheath = 1
 	)
+	if(H.mind)
+		SStreasury.give_money_account(ECONOMIC_UPPER_CLASS, H, "Savings.")
 
 
 /datum/advclass/knight/irregularknight
@@ -377,19 +424,22 @@
 		STATKEY_STR = 1,
 		STATKEY_INT = 1,
 		STATKEY_WIL = 2,
-		STATKEY_SPD = 2
+		STATKEY_SPD = 2,
+		STATKEY_PER = 1,
+		STATKEY_FOR = 1
 	)
 	subclass_skills = list(
 		/datum/skill/combat/swords = SKILL_LEVEL_EXPERT, //Swords and knives class.
-		/datum/skill/combat/knives = SKILL_LEVEL_EXPERT,	
-		/datum/skill/combat/whipsflails = SKILL_LEVEL_EXPERT, //Whips can work as a light class weapon.	
-		/datum/skill/combat/shields = SKILL_LEVEL_JOURNEYMAN,	
-		/datum/skill/misc/riding = SKILL_LEVEL_APPRENTICE,	
+		/datum/skill/combat/knives = SKILL_LEVEL_EXPERT,
+		/datum/skill/combat/whipsflails = SKILL_LEVEL_EXPERT, //Whips can work as a light class weapon.
+		/datum/skill/combat/shields = SKILL_LEVEL_JOURNEYMAN,
+		/datum/skill/misc/riding = SKILL_LEVEL_APPRENTICE,
 		/datum/skill/combat/crossbows = SKILL_LEVEL_EXPERT, //Bows fit a light/speedy class pretty well, gave them ranged options.
 		/datum/skill/combat/bows = SKILL_LEVEL_EXPERT,
-		/datum/skill/misc/climbing = SKILL_LEVEL_EXPERT,		
+		/datum/skill/misc/climbing = SKILL_LEVEL_EXPERT,
 		/datum/skill/combat/wrestling = SKILL_LEVEL_JOURNEYMAN,
 		/datum/skill/misc/athletics = SKILL_LEVEL_EXPERT,
+		/datum/skill/misc/swimming = SKILL_LEVEL_APPRENTICE, //Should have Jman but wears medium/light so no
 		/datum/skill/combat/unarmed = SKILL_LEVEL_JOURNEYMAN,
 		/datum/skill/misc/sneaking = SKILL_LEVEL_APPRENTICE,
 		/datum/skill/misc/reading = SKILL_LEVEL_APPRENTICE,
@@ -398,13 +448,13 @@
 
 
 /datum/outfit/job/roguetown/knight/irregularknight/pre_equip(mob/living/carbon/human/H)
-	..()	
+	..()
 	H.dna.species.soundpack_m = new /datum/voicepack/male/knight()
 	H.verbs |= /mob/proc/haltyell
 
 	H.adjust_blindness(-3)
 	if(H.mind)
-		var/weapons = list("Rapier + Longbow","Estoc + Recurve Bow","Sabre + Buckler","Whip + Crossbow","Greataxe + Sling")
+		var/weapons = list("Rapier + Longbow","Estoc + Recurve Bow","Sabre + Buckler","Whip + Crossbow","Greataxe + Sling", "Shamshir + Pistol")
 		var/armor_options = list("Light Armor", "Medium Armor", "Medium Cuirass")
 		var/weapon_choice = input(H, "Choose your weapon.", "TAKE UP ARMS") as anything in weapons
 		var/armor_choice = input(H, "Choose your armor.", "TAKE UP ARMS") as anything in armor_options
@@ -421,7 +471,7 @@
 				backl = /obj/item/rogueweapon/scabbard/gwstrap
 				beltr = /obj/item/quiver/arrows
 				beltl = /obj/item/gun/ballistic/revolver/grenadelauncher/bow/recurve
-			
+
 			if("Sabre + Buckler")
 				beltl = /obj/item/rogueweapon/scabbard/sword
 				r_hand = /obj/item/rogueweapon/sword/sabre
@@ -431,7 +481,7 @@
 				beltl = /obj/item/rogueweapon/whip
 				backl = /obj/item/gun/ballistic/revolver/grenadelauncher/crossbow
 				beltr = /obj/item/quiver/bolts
-			
+
 			if("Greataxe + Sling")
 				H.adjust_skillrank(/datum/skill/combat/slings, 4, TRUE)
 				H.adjust_skillrank_up_to(/datum/skill/combat/axes, 4, TRUE)
@@ -439,7 +489,15 @@
 				backl = /obj/item/rogueweapon/scabbard/gwstrap
 				beltr = /obj/item/quiver/sling/iron
 				beltl = /obj/item/gun/ballistic/revolver/grenadelauncher/sling
-		
+
+			if("Shamshir + Pistol")
+				l_hand = /obj/item/twilight_powderflask
+				r_hand = /obj/item/rogueweapon/sword/sabre/shamshir
+				backl = /obj/item/rogueweapon/scabbard/sword
+				beltr = /obj/item/gun/ballistic/twilight_firearm/arquebus_pistol
+				beltl = /obj/item/quiver/twilight_bullet/lead
+				H.adjust_skillrank_up_to(/datum/skill/combat/twilight_firearms, 4, TRUE)
+
 		switch(armor_choice)
 			if("Light Armor")
 				shirt = /obj/item/clothing/suit/roguetown/armor/gambeson/heavy
@@ -452,7 +510,7 @@
 			if("Medium Cuirass")
 				shirt = /obj/item/clothing/suit/roguetown/armor/chainmail
 				pants = /obj/item/clothing/under/roguetown/chainlegs
-				armor = /obj/item/clothing/suit/roguetown/armor/plate/half/fluted
+				armor = /obj/item/clothing/suit/roguetown/armor/plate/cuirass/fluted
 
 		var/helmets = list(
 			"Pigface Bascinet" 	= /obj/item/clothing/head/roguetown/helmet/bascinet/pigface,
@@ -467,12 +525,25 @@
 			"Slitted Kettle" = /obj/item/clothing/head/roguetown/helmet/heavy/knight/skettle,
 			"None"
 		)
-		
+
 		var/helmchoice = input(H, "Choose your Helm.", "TAKE UP HELMS") as anything in helmets
 		if(helmchoice != "None")
 			head = helmets[helmchoice]
+    
+		var/heraldy = list( //Champions get lord's heraldy with a bit more variety, due to their unusual equipment
+				"Surcoat" 	= /obj/item/clothing/cloak/tabard/stabard/guard,
+				"Tabard"		= /obj/item/clothing/cloak/tabard/knight,
+				"Jupon"		= /obj/item/clothing/cloak/tabard/stabard/surcoat/guard,
+				"Halfcloak" = /obj/item/clothing/cloak/half/knight,
+				"Fur Cloak" = /obj/item/clothing/cloak/raincloak/furcloak/knight,
+				)
+		var/heraldychoice = input("Choose your heraldy.", "RAISE UP THE BANNER") as anything in heraldy
+		cloak = heraldy[heraldychoice]
+ 
 	backpack_contents = list(
-		/obj/item/rogueweapon/huntingknife/idagger/steel/special = 1, 
-		/obj/item/rope/chain = 1, 
+		/obj/item/rogueweapon/huntingknife/idagger/steel/special = 1,
+		/obj/item/rope/chain = 1,
 		/obj/item/rogueweapon/scabbard/sheath = 1
 	)
+	if(H.mind)
+		SStreasury.give_money_account(ECONOMIC_UPPER_CLASS, H, "Savings.")

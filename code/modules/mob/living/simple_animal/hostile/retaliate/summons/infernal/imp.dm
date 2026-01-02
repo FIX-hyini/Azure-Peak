@@ -1,6 +1,8 @@
 /mob/living/simple_animal/hostile/retaliate/rogue/infernal/imp
 	icon = 'icons/mob/summonable/32x32.dmi'
 	name = "infernal imp"
+	desc = "This is a diminutive humanoid creature capable of flight. While its claws are sharp and its movements agile, \
+	it does not seem remarkably imposing."
 	icon_state = "imp"
 	icon_living = "imp"
 	icon_dead = "vvd"
@@ -80,7 +82,7 @@
 	new /obj/item/magic/infernal/ash(deathspot)
 	new /obj/item/magic/infernal/ash(deathspot)
 	update_icon()
-	sleep(1)
+	stoplag(1)
 	qdel(src)
 
 

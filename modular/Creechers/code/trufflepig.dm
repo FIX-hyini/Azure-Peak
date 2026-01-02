@@ -127,6 +127,11 @@
 	response_help_simple = "give the signal to the"
 	var/hangry_meter = 0
 
+	//new ai, old ai off
+	AIStatus = AI_OFF
+	can_have_ai = FALSE
+	ai_controller = /datum/ai_controller/generic
+
 
 /obj/effect/decal/remains/pig
 	name = "remains"
@@ -148,6 +153,11 @@
 				qdel(M)
 				break
 
+/mob/living/simple_animal/hostile/retaliate/rogue/trufflepig/Initialize()
+	. = ..()
+	AddElement(/datum/element/ai_retaliate)
+	ai_controller.set_blackboard_key(BB_BASIC_FOODS, food_type)
+
 /mob/living/simple_animal/hostile/retaliate/rogue/trufflepig/attack_hand(mob/living/carbon/human/M)
 	. = ..()
 	hangry_meter += 1
@@ -160,11 +170,11 @@
 		dir = pick(GLOB.cardinals)
 		step(src, dir)
 		playsound(src, 'sound/items/sniff.ogg', 60, FALSE)
-		sleep(10)
+		stoplag(1 SECONDS)
 		dir = pick(GLOB.cardinals)
 		step(src, dir)
 		playsound(src, 'sound/items/sniff.ogg', 60, FALSE)
-		sleep(10)
+		stoplag(1 SECONDS)
 		dir = pick(GLOB.cardinals)
 		playsound(get_turf(src), pick('modular/Creechers/sound/pig1.ogg','modular/Creechers/sound/pig2.ogg'), 100, TRUE, -1)
 		var/turf/t = get_turf(src)
@@ -181,10 +191,10 @@
 		playsound(src,'sound/misc/eat.ogg', rand(30,60), TRUE)
 		qdel(O)
 		playsound(get_turf(src), 'modular/Creechers/sound/pighangry.ogg', 130, TRUE, -1)
-		sleep(20)
+		stoplag(2 SECONDS)
 		playsound(get_turf(src), 'modular/Creechers/sound/pighangry.ogg', 130, TRUE, -1)
 		visible_message("<span class='notice'>The pig shivers.</span>")
-		sleep(10)
+		stoplag(1 SECONDS)
 		death()
 	if(istype(O, /obj/item/reagent_containers/food/snacks/grown/potato/rogue))
 		if(hangry_meter > 2)

@@ -308,7 +308,7 @@
 
 /datum/stressevent/soulchurner
 	timer = 1 MINUTES
-	stressadd = 30
+	stressadd = 20
 	desc = span_red("The horrid wails of the dead call for relief!")
 
 /datum/stressevent/soulchurnerpsydon
@@ -324,6 +324,11 @@
 /datum/stressevent/unseemly
 	stressadd = 3
 	desc = span_red("Their face is unbearable!")
+	timer = 3 MINUTES
+
+/datum/stressevent/leprosy
+	stressadd = 1
+	desc = span_red("A disgusting leper. Better keep my distance.")
 	timer = 3 MINUTES
 
 /datum/stressevent/uncanny
@@ -431,3 +436,8 @@
 	timer = 10 MINUTES
 	stressadd = -2
 	desc = span_green("Since my magical accident, everything just seems so funny!")
+
+/datum/stressevent/archivist_shushed
+	timer = 1 MINUTES
+	stressadd = 4
+	desc = span_red("I was shushed by the archivist!")

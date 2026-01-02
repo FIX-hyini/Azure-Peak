@@ -9,7 +9,7 @@
 	allowed_sexes = list(MALE, FEMALE)
 	allowed_races = RACES_NO_CONSTRUCT
 	advclass_cat_rolls = list(CTAG_CONSORT = 20)
-	tutorial = "You are a noble from a foreign court who has travelled to Azure Peak in order to win the hand of Azuria's most eligible bachelor and secure a political ally for your house. Competition is fierce, and it seems you're not the only one vying for the duke's favor..."
+	tutorial = "You are a noble from a foreign court who has travelled to Twilight Axis in order to win the hand of Azuria's most eligible bachelor and secure a political ally for your house. Competition is fierce, and it seems you're not the only one vying for the duke's favor..."
 
 	outfit = /datum/outfit/job/roguetown/suitor
 
@@ -81,6 +81,7 @@
 		backr = /obj/item/storage/backpack/rogue/satchel
 		id = /obj/item/clothing/ring/signet
 		shoes = /obj/item/clothing/shoes/roguetown/shortboots
+		saiga_shoes = /obj/item/clothing/shoes/roguetown/horseshoes/gold
 	else if(should_wear_masc_clothes(H))
 		head = /obj/item/clothing/head/roguetown/nyle/consortcrown
 		pants = /obj/item/clothing/under/roguetown/tights
@@ -88,6 +89,7 @@
 		shirt = /obj/item/clothing/suit/roguetown/shirt/undershirt/lowcut
 		backl = /obj/item/rogue/instrument/lute
 		shoes = /obj/item/clothing/shoes/roguetown/boots/nobleboot
+		saiga_shoes = /obj/item/clothing/shoes/roguetown/horseshoes/gold
 		belt = /obj/item/storage/belt/rogue/leather
 		neck = /obj/item/roguekey/manor
 		beltl = /obj/item/flashlight/flare/torch/lantern
@@ -97,6 +99,8 @@
 	if(H.mind)
 		var/datum/antagonist/new_antag = new /datum/antagonist/suitor()
 		H.mind.add_antag_datum(new_antag)
+	if(H.mind)
+		SStreasury.give_money_account(ECONOMIC_RICH, H, "Savings.")
 
 /datum/advclass/suitor/schemer
 	name = "Schemer"
@@ -132,6 +136,7 @@
 	wrists = /obj/item/clothing/wrists/roguetown/bracers/leather/heavy
 	shirt = /obj/item/clothing/suit/roguetown/armor/gambeson/lord
 	shoes = /obj/item/clothing/shoes/roguetown/boots/nobleboot
+	saiga_shoes = /obj/item/clothing/shoes/roguetown/horseshoes/gold
 	belt = /obj/item/storage/belt/rogue/leather/black
 	neck = /obj/item/roguekey/manor
 	beltl = /obj/item/rogueweapon/huntingknife/idagger/steel
@@ -149,6 +154,8 @@
 	if(H.mind)
 		var/datum/antagonist/new_antag = new /datum/antagonist/suitor()
 		H.mind.add_antag_datum(new_antag)
+	if(H.mind)
+		SStreasury.give_money_account(ECONOMIC_RICH, H, "Savings.")
 
 /datum/advclass/suitor/gallant
 	name = "Gallant"
@@ -186,6 +193,7 @@
 	armor = /obj/item/clothing/suit/roguetown/armor/gambeson/heavy/otavan
 	shirt = /obj/item/clothing/suit/roguetown/armor/chainmail
 	shoes = /obj/item/clothing/shoes/roguetown/boots/nobleboot
+	saiga_shoes = /obj/item/clothing/shoes/roguetown/horseshoes/gold
 	belt = /obj/item/storage/belt/rogue/leather
 	neck = /obj/item/roguekey/manor
 	beltl = /obj/item/flashlight/flare/torch/lantern
@@ -196,6 +204,8 @@
 	if(H.mind)
 		var/datum/antagonist/new_antag = new /datum/antagonist/suitor()
 		H.mind.add_antag_datum(new_antag)
+	if(H.mind)
+		SStreasury.give_money_account(ECONOMIC_RICH, H, "Savings.")
 
 
 /obj/item/clothing/head/roguetown/roguehood/shalal/hijab/gallant

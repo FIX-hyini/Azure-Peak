@@ -336,7 +336,7 @@ GLOBAL_LIST_INIT(stone_personality_descs, list(
 		..()
 //rock munching
 /obj/item/natural/stone/attack(mob/living/M, mob/user)
-	testing("attack")
+
 	if(!user.cmode)
 		if(M.construct)
 			var/healydoodle = magic_power+1
@@ -497,7 +497,7 @@ GLOBAL_LIST_INIT(stone_personality_descs, list(
 	desc = "Wait, this shouldn't be here?"
 	icon_state = "stonerandom"
 
-/obj/item/natural/rock/random/Initialize()
+/obj/item/natural/rock/random_ore/Initialize()
 	. = ..()
 	var/obj/item/natural/rock/theboi = pick(list(
 		/obj/item/natural/rock/gold,

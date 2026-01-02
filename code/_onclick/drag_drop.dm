@@ -30,8 +30,8 @@
 			var/list/click_params = params2list(params)
 			if(!click_params || !click_params["icon-x"] || !click_params["icon-y"])
 				return
-			I.pixel_x = round(CLAMP(text2num(click_params["icon-x"]) - 16, -(world.icon_size/2), world.icon_size/2)/modifier, 1)
-			I.pixel_y = round(CLAMP(text2num(click_params["icon-y"]) - 16, -(world.icon_size/2), world.icon_size/2)/modifier, 1)
+			I.pixel_x = round(CLAMP(pixel_x + text2num(click_params["icon-x"]) - 16, pixel_x + -(world.icon_size/2), pixel_x + world.icon_size/2)/modifier, 1)
+			I.pixel_y = round(CLAMP(pixel_y + text2num(click_params["icon-y"]) - 16, pixel_y + -(world.icon_size/2), pixel_y + world.icon_size/2)/modifier, 1)
 			return
 	return
 
@@ -72,6 +72,21 @@
 /atom/movable/screen
 	blockscharging = TRUE
 
+///setter used to set our new hud
+/atom/movable/screen/proc/set_new_hud(datum/hud/hud_owner)
+	if(hud)
+		UnregisterSignal(hud, COMSIG_PARENT_QDELETING)
+	if(isnull(hud_owner))
+		hud = null
+		return
+	hud = hud_owner
+	RegisterSignal(hud, COMSIG_PARENT_QDELETING, PROC_REF(on_hud_delete))
+
+/atom/movable/screen/proc/on_hud_delete(datum/source)
+	SIGNAL_HANDLER
+
+	set_new_hud(hud_owner = null)
+
 /client/MouseDown(object, location, control, params)
 	if(mob.incapacitated())
 		return
@@ -99,9 +114,9 @@
 	chargedprog = 0
 
 	if(!mob.fixedeye) //If fixedeye isn't already enabled, we need to set this var
-		mob.tempfixeye = TRUE //Change icon to 'target' red eye
 		mob.nodirchange = TRUE
-
+	mob.tempfixeye = TRUE //Change icon to 'target' red eye
+	
 	for(var/atom/movable/screen/eye_intent/eyet in mob.hud_used.static_inventory)
 		eyet.update_icon(mob) //Update eye icon
 
@@ -135,8 +150,8 @@
 				if(mob.next_rmove > world.time)
 					return
 			mob.used_intent = mob.o_intent
-			if(mob.used_intent.get_chargetime() && mob.mmb_intent.can_charge() && !AD.blockscharging && !mob.in_throw_mode)
-				updateprogbar()
+			if(mob.used_intent.get_chargetime() && mob.mmb_intent.can_charge(object) && !AD.blockscharging && !mob.in_throw_mode)
+				updateprogbar(object)
 			else
 				mouse_pointer_icon = 'icons/effects/mousemice/human_attack.dmi'
 			return
@@ -156,12 +171,12 @@
 		if(!mob.mmb_intent)
 			mouse_pointer_icon = 'icons/effects/mousemice/human_looking.dmi'
 		else
-			if(mob.mmb_intent.get_chargetime() && mob.mmb_intent.can_charge() && !AD.blockscharging)
+			if(mob.mmb_intent.get_chargetime() && mob.mmb_intent.can_charge(object) && !AD.blockscharging)
 				if(mob.buckled)
 					mob.buckled.face_atom(object, location, control, params)
 				else
 					mob.face_atom(object, location, control, params)
-				updateprogbar()
+				updateprogbar(object)
 			else
 				mouse_pointer_icon = mob.mmb_intent.pointer
 		return
@@ -179,13 +194,16 @@
 		mob.atkswinging = "left"
 		mob.used_intent = mob.a_intent
 		if(mob.used_intent.get_chargetime() && !AD.blockscharging && !mob.in_throw_mode)
-			updateprogbar()
+			updateprogbar(object)
 		else
 			mouse_pointer_icon = 'icons/effects/mousemice/human_attack.dmi'
 		return
 
 /mob
 	var/datum/intent/curplaying
+
+/atom/proc/should_click_on_mouse_up(var/atom/original_object)
+	return TRUE
 
 /client/MouseUp(object, location, control, params)
 	charging = 0
@@ -197,8 +215,8 @@
 		mob.curplaying.on_mouse_up()
 
 	if(!mob.fixedeye)
-		mob.tempfixeye = FALSE
 		mob.nodirchange = FALSE
+	mob.tempfixeye = FALSE
 
 	if(mob.hud_used)
 		for(var/atom/movable/screen/eye_intent/eyet in mob.hud_used.static_inventory)
@@ -232,10 +250,9 @@
 //	var/list/L = params2list(params)
 
 	if(tcompare)
-		if(object)
-			if(isatom(object) && object != tcompare && mob.atkswinging && tcompare != mob)
-				var/atom/N = object
-				N.Click(location, control, params)
+		var/atom/target_atom = object
+		if(istype(target_atom) && target_atom.should_click_on_mouse_up(tcompare) && tcompare != mob && (mob.atkswinging == "middle" || (mob.atkswinging && object != tcompare)))
+			target_atom.Click(location, control, params)
 		tcompare = null
 
 //	mouse_pointer_icon = 'icons/effects/mousemice/human.dmi'
@@ -247,13 +264,13 @@
 	if(!isliving(mob))
 		return
 
-/client/proc/updateprogbar()
+/client/proc/updateprogbar(atom/clicked_object)
 	if(!mob)
 		return
 	if(!isliving(mob))
 		return
 	var/mob/living/L = mob
-	if(!L.used_intent.can_charge())
+	if(!L.used_intent.can_charge(clicked_object))
 		return
 	L.used_intent.prewarning()
 
@@ -274,37 +291,47 @@
 		lastplayed = 0
 		doneset = 0
 		chargedprog = 0
-		mouse_pointer_icon = 'icons/effects/mousemice/swang/acharging.dmi'
 		START_PROCESSING(SSmousecharge, src)
 
-/client/Destroy()
+/* /client/Destroy() // TA EDIT START
 	STOP_PROCESSING(SSmousecharge, src)
-	return ..()
+	return ..() */ //TA EDIT END
 
-/client/process(seconds_per_tick)
+/client/process()
 	if(!isliving(mob))
 		return PROCESS_KILL
 	var/mob/living/L = mob
-	if(!L?.client || !update_to_mob(L, seconds_per_tick))
+	if(!L?.client || !update_to_mob(L))
 		if(L.curplaying)
 			L.curplaying.on_mouse_up()
 		L.update_charging_movespeed()
 		return PROCESS_KILL
 
-/client/proc/update_to_mob(mob/living/L, seconds_per_tick)
+/client/proc/update_to_mob(mob/living/L)
 	if(charging)
 		if(progress < goal)
-			progress += 1 * seconds_per_tick // Tickspeed independent. Should always be 1, isn't always 1 when under strain.
-			chargedprog = ((progress / goal) * 100)
-			mouse_pointer_icon = 'icons/effects/mousemice/swang/acharging.dmi'
+			progress++
+			chargedprog = text2num("[((progress / goal) * 100)]")
+// Here we start changing the mouse_pointer_icon
+			if(!(mob.used_intent.charge_pointer & mob.used_intent.charged_pointer))
+				var/mouseprog = clamp(round(((progress / goal)*100),5), 0, 100)
+				mouse_pointer_icon = file("icons/effects/mousemice/charge/default/[mouseprog].dmi")
+			else
+				mouse_pointer_icon = mob.used_intent.charge_pointer	
 		else //Fully charged spell
 			if(!doneset)
 				doneset = 1
+				chargedprog = 100
+				if(!(mob.used_intent.charge_pointer & mob.used_intent.charged_pointer))
+					mouse_pointer_icon = 'icons/effects/mousemice/charge/default/100.dmi'
+				else
+					mouse_pointer_icon = mob.used_intent.charged_pointer
+// Now we are done messing with the mouse_pointer_icon
+//				if(sections)
+//					L.say(L.used_intent.charge_invocation[L.used_intent.charge_invocation.len])
 				if(L.curplaying && !L.used_intent.keep_looping)
 					playsound(L, 'sound/magic/charged.ogg', 100, TRUE)
 					L.curplaying.on_mouse_up()
-				chargedprog = 100
-				mouse_pointer_icon = 'icons/effects/mousemice/swang/acharged.dmi'
 			else
 				if(!L.stamina_add(L.used_intent.chargedrain))
 					L.stop_attack()

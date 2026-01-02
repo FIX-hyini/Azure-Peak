@@ -3,16 +3,16 @@
 	flag = WANDERERS
 	department_flag = WANDERERS
 	faction = "Station"
-	total_positions = 8
-	spawn_positions = 8
+	total_positions = 4
+	spawn_positions = 4
 	allowed_sexes = list(MALE, FEMALE)
 	allowed_races = RACES_ALL_KINDS
 	tutorial = "Blood stains your hands and the coins you hold. You are a sell-sword, a mercenary, a contractor of war. Where you come from, what you are, who you serve.. none of it matters. What matters is that the mammon flows to your pocket."
 	display_order = JDO_MERCENARY
 	selection_color = JCOLOR_WANDERER
-	min_pq = 2		//Will be handled by classes if PQ limiting is needed. --But Until then, learn escalation, mercs.
+	min_pq = 25		//Will be handled by classes if PQ limiting is needed. --But Until then, learn escalation, mercs.
 	max_pq = null
-	round_contrib_points = 1
+	round_contrib_points = null
 	outfit = null	//Handled by classes
 	outfit_female = null
 	advclass_cat_rolls = list(CTAG_MERCENARY = 20)
@@ -21,9 +21,11 @@
 	class_categories = TRUE
 	job_subclasses = list(
 		/datum/advclass/mercenary/anthrax,
+		/datum/advclass/mercenary/anthrax/assasin,
 		/datum/advclass/mercenary/atgervi,
 		/datum/advclass/mercenary/atgervi/shaman,
-		/datum/advclass/mercenary/condottiero,
+		/datum/advclass/mercenary/etrusca/condottiero,
+		/datum/advclass/mercenary/etrusca/balestrieri,
 		/datum/advclass/mercenary/desert_rider,
 		/datum/advclass/mercenary/desert_rider/zeybek,
 		/datum/advclass/mercenary/desert_rider/almah,
@@ -35,6 +37,8 @@
 		/datum/advclass/mercenary/grenzelhoft/halberdier,
 		/datum/advclass/mercenary/grenzelhoft/crossbowman,
 		/datum/advclass/mercenary/grenzelhoft/mage,
+		/datum/advclass/mercenary/gronn,
+		/datum/advclass/mercenary/gronnheavy,
 		/datum/advclass/mercenary/routier,
 		/datum/advclass/mercenary/rumaclan,
 		/datum/advclass/mercenary/rumaclan/sasu,
@@ -47,5 +51,27 @@
 		/datum/advclass/mercenary/blackoak/ranger,
 		/datum/advclass/mercenary/underdweller,
 		/datum/advclass/mercenary/grudgebearer,
-		/datum/advclass/mercenary/grudgebearer/soldier
+		/datum/advclass/mercenary/grudgebearer/soldier,
+		/datum/advclass/mercenary/trollslayer,
+    /datum/advclass/mercenary/twilight_gunslinger,
+    /datum/advclass/mercenary/twilight_grenzelhoft_jager
 	)
+	same_job_respawn_delay = 30 MINUTES
+
+/proc/update_mercenary_slots()
+	var/datum/job/mercenary_job = SSjob.GetJob("Mercenary")
+	if(!mercenary_job)
+		return
+
+	var/player_count = length(GLOB.joined_player_list)
+	var/slots = 4
+	
+	if(player_count > 50)
+		var/extra = floor((player_count - 50) / 10)
+		slots += extra
+
+	//4 slots minimum, 8 maximum.
+	slots = min(slots, 8)
+
+	mercenary_job.total_positions = slots
+	mercenary_job.spawn_positions = slots

@@ -1,9 +1,8 @@
 /mob/living/carbon/Initialize()
 	..()
 
-	pain_threshold = HAS_TRAIT(src, TRAIT_ADRENALINE_RUSH) ? ((STAWIL + 5) * 10) : (STAWIL * 10)
-	if(has_flaw(/datum/charflaw/addiction/masochist)) // Masochists handle pain better by about 1 endurance point
-		pain_threshold += 10
+	pain_threshold = STAWIL * 10
+
 	if(HAS_TRAIT(src, TRAIT_NOPAIN))
 		pain_threshold = 250
 
@@ -59,6 +58,7 @@
 	AdjustKnockdown(levels * 20)
 
 /mob/living/carbon/swap_hand(held_index)
+	SEND_SIGNAL(src, COMSIG_CARBON_SWAPHANDS)
 	if(!held_index)
 		held_index = (active_hand_index % held_items.len)+1
 
@@ -85,11 +85,6 @@
 		H = hud_used.action_intent
 	oactive = FALSE
 	update_a_intents()
-
-	if(ishuman(src))
-		var/mob/living/carbon/human/H = src
-		if(H.has_status_effect(/datum/status_effect/buff/clash))
-			H.bad_guard(span_warning("I swapped away from the weapon!"))
 	return TRUE
 
 
@@ -113,7 +108,8 @@
 	// Special case for scissors with snip intent targeting the head or skull
 	if(istype(I, /obj/item/rogueweapon/huntingknife/scissors) && user.used_intent.type == /datum/intent/snip && (user.zone_selected == BODY_ZONE_HEAD || user.zone_selected == BODY_ZONE_PRECISE_SKULL))
 		return I.attack(src, user)
-
+	if(istype(I, /obj/item/leash))
+		return I.attack(src, user)
 	if(!user.cmode)
 		var/try_to_fail = istype(user.rmb_intent, /datum/rmb_intent/strong)
 		var/list/possible_steps = list()
@@ -404,6 +400,17 @@
 	if(!has_status_effect(/datum/status_effect/fire_handler))
 		extinguish_mob(TRUE)
 
+/mob/living/carbon/resist_leash()
+	to_chat(src, span_notice("I reach for the hook on my collar..."))
+	//Determine how long it takes to remove the leash
+	var/deleash = 15
+	if(src.handcuffed)
+		deleash = 60
+	if(move_after(src, deleash, 0, target = src))
+		if(!QDELETED(src))
+			to_chat(src, "<span class='warning'>[src] has removed their leash!</span>")
+			src.remove_status_effect(/datum/status_effect/leash_pet)
+
 /mob/living/carbon/resist_restraints()
 	var/obj/item/I = null
 	var/type = 0
@@ -586,7 +593,7 @@
 
 /mob/living/carbon
 	var/nausea = 0
-	var/pain_threshold = 0
+	var/bleeding_tier = 0 
 
 /mob/living/carbon/proc/add_nausea(amt)
 	nausea = clamp(nausea + amt, 0, 300)
@@ -894,6 +901,9 @@
 	protection *= INVERSE(target_zones.len)
 	return protection
 
+/mob/living
+	var/succumb_timer = 0
+
 //this handles hud updates
 /mob/living/carbon/update_damage_hud()
 
@@ -945,10 +955,14 @@
 			overlay_fullscreen("critvision", /atom/movable/screen/fullscreen/crit/vision, visionseverity)
 		else
 			clear_fullscreen("critvision")
+		if(!succumb_timer)
+			succumb_timer = world.time
 		overlay_fullscreen("crit", /atom/movable/screen/fullscreen/crit, severity)
 		overlay_fullscreen("DD", /atom/movable/screen/fullscreen/crit/death)
 		overlay_fullscreen("DDZ", /atom/movable/screen/fullscreen/crit/zeth)
 	else
+		if(succumb_timer)
+			succumb_timer = 0
 		clear_fullscreen("crit")
 		clear_fullscreen("critvision")
 		clear_fullscreen("DD")
@@ -1003,31 +1017,31 @@
 		overlay_fullscreen("brute", /atom/movable/screen/fullscreen/brute, severity)
 	else
 		clear_fullscreen("brute")*/
-
-	var/hurtdamage = ((get_complex_pain() / (STAWIL * 10)) * 100) //what percent out of 100 to max pain
-	if(hurtdamage > 5) //float
-		var/severity = 0
-		switch(hurtdamage)
-			if(5 to 20)
-				severity = 1
-			if(20 to 40)
-				severity = 2
-			if(40 to 60)
-				severity = 3
-				overlay_fullscreen("painflash", /atom/movable/screen/fullscreen/painflash)
-			if(60 to 80)
-				severity = 4
-				overlay_fullscreen("painflash", /atom/movable/screen/fullscreen/painflash)
-			if(80 to 99)
-				severity = 5
-				overlay_fullscreen("painflash", /atom/movable/screen/fullscreen/painflash)
-			if(99 to INFINITY)
-				severity = 6
-				overlay_fullscreen("painflash", /atom/movable/screen/fullscreen/painflash)
-		overlay_fullscreen("brute", /atom/movable/screen/fullscreen/brute, severity)
-	else
-		clear_fullscreen("brute")
-		clear_fullscreen("painflash")
+	if(show_redflash())
+		var/hurtdamage = ((get_complex_pain() / (STAWIL * 10)) * 100) //what percent out of 100 to max pain
+		if(hurtdamage > 5) //float
+			var/severity = 0
+			switch(hurtdamage)
+				if(5 to 20)
+					severity = 1
+				if(20 to 40)
+					severity = 2
+				if(40 to 60)
+					severity = 3
+					overlay_fullscreen("painflash", /atom/movable/screen/fullscreen/painflash)
+				if(60 to 80)
+					severity = 4
+					overlay_fullscreen("painflash", /atom/movable/screen/fullscreen/painflash)
+				if(80 to 99)
+					severity = 5
+					overlay_fullscreen("painflash", /atom/movable/screen/fullscreen/painflash)
+				if(99 to INFINITY)
+					severity = 6
+					overlay_fullscreen("painflash", /atom/movable/screen/fullscreen/painflash)
+			overlay_fullscreen("brute", /atom/movable/screen/fullscreen/brute, severity)
+		else
+			clear_fullscreen("brute")
+			clear_fullscreen("painflash")
 
 /mob/living/carbon/update_health_hud(shown_health_amount)
 	if(!client || !hud_used)
@@ -1106,7 +1120,7 @@
 	update_hud_handcuffed()
 	update_mobility()
 
-/mob/living/carbon/fully_heal(admin_revive = FALSE)
+/mob/living/carbon/fully_heal(admin_revive = FALSE, break_restraints = FALSE)
 	if(reagents)
 		reagents.clear_reagents()
 		for(var/addi in reagents.addiction_list)
@@ -1128,12 +1142,13 @@
 		suiciding = FALSE
 		regenerate_limbs()
 		regenerate_organs()
+		if(reagents)
+			reagents.addiction_list = list()
+	if(break_restraints)
 		handcuffed = initial(handcuffed)
 		for(var/obj/item/restraints/R in contents) //actually remove cuffs from inventory
 			qdel(R)
 		update_handcuffed()
-		if(reagents)
-			reagents.addiction_list = list()
 	cure_all_traumas(TRAUMA_RESILIENCE_MAGIC)
 	..()
 	// heal ears after healing traits, since ears check TRAIT_DEAF trait
@@ -1144,7 +1159,7 @@
 /mob/living/carbon/can_be_revived()
 	. = ..()
 	if(!getorgan(/obj/item/organ/brain) && (!mind))
-		testing("norescarbon")
+
 		return 0
 
 /mob/living/carbon/harvest(mob/living/user)
@@ -1347,6 +1362,16 @@
 	if(istype(loc, /turf/open/water) && !(mobility_flags & MOBILITY_STAND))
 		return FALSE
 
+/mob/living/carbon/resist_leash()
+	to_chat(src, span_notice("I reach for the hook on my collar..."))
+	//Determine how long it takes to remove the leash
+	var/deleash = 5 SECONDS
+	if(src.handcuffed)
+		deleash = 20 SECONDS
+	if(move_after(src, deleash, 0, target = src))
+		if(!QDELETED(src))
+			to_chat(src, "<span class='warning'>[src] has removed their leash!</span>")
+			src.remove_status_effect(/datum/status_effect/leash_pet)
 
 /mob/living/carbon/can_buckle()
 	if((cmode) && (mind) && (!handcuffed) && (stat == CONSCIOUS))

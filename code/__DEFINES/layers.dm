@@ -84,7 +84,14 @@
 #define SPACEVINE_LAYER 4.8
 #define SPACEVINE_MOB_LAYER 4.9
 //#define FLY_LAYER 5 //For easy recordkeeping; this is a byond define
+#define MOB_EFFECT_LAYER_FEINT 5.01
+#define MOB_EFFECT_LAYER_SWINGDELAY 5.015
+#define MOB_EFFECT_LAYER_EXPOSED 5.02	//For some INEXPLICABLE reason 4.0x gets wiped on MMB intent updates and 3.0x go under the mob (bad).
+#define MOB_EFFECT_LAYER_OFFBALANCED 5.03
+#define MOB_EFFECT_LAYER_GUARD 5.04
+#define MOB_EFFECT_LAYER_FEINTED 5.05
 #define GASFIRE_LAYER 5.05
+#define MOB_EFFECT_LAYER_LIMBGUARD 5.06
 #define RIPPLE_LAYER 5.1
 
 #define GHOST_LAYER 6
@@ -163,3 +170,17 @@
 #define POINT_PLANE 90
 
 #define FOV_EFFECTS_LAYER 10000
+
+#define LOBBY_MENU_PLANE 5000
+#define LOBBY_MENU_RENDER_TARGET "LOBBY_MENU_RENDER_TARGET"
+
+///Layer for lobby menu collapse button
+#define LOBBY_BELOW_MENU_LAYER 2
+/// Layer for background
+#define LOBBY_BACKGROUND_LAYER 3
+///Layer for main buttons (Join/Ready, Observe, Character Prefs)
+#define LOBBY_MENU_LAYER 4
+///Layer for lobby menu shutter, which covers up the menu to collapse/expand it
+#define LOBBY_SHUTTER_LAYER 5
+///Layer for lobby menu buttons that are hanging away from and lower than the main panel
+#define LOBBY_BOTTOM_BUTTON_LAYER 6

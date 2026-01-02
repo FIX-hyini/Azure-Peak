@@ -136,16 +136,16 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	if(current_version < 34) // Update races
 		var/species_name
 		S["species"] >> species_name
-		testing("Save version < 34, updating [species_name].")
+
 		if(species_name)
 			var/newtype = GLOB.species_list[species_name]
 			if(!newtype)
 				switch(species_name)
 					if("Sissean")
-						testing("Updating to Zardman.")
+
 						species_name = "Zardman"
 					if("Vulpkian")
-						testing("Your character is now a Venardine.")
+
 						species_name = "Venardine"
 		_load_species(S, species_name)
 
@@ -194,6 +194,10 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	S["mute_animal_emotes"]	>> mute_animal_emotes
 	S["autoconsume"]		>> autoconsume
 	S["no_examine_blocks"]	>> no_examine_blocks
+	S["no_autopunctuate"]	>> no_autopunctuate
+	S["no_language_fonts"]	>> no_language_fonts
+	S["no_language_icon"]	>> no_language_icon
+	S["no_redflash"]		>> no_redflash
 	S["crt"]				>> crt
 	S["grain"]				>> grain
 	S["sexable"]			>> sexable
@@ -229,6 +233,8 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 
 	// Custom hotkeys
 	S["key_bindings"]		>> key_bindings
+
+	S["defiant"]			>> defiant
 
 	//try to fix any outdated data if necessary
 	if(needs_update >= 0)
@@ -269,6 +275,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	pda_style		= sanitize_inlist(pda_style, GLOB.pda_styles, initial(pda_style))
 	pda_color		= sanitize_hexcolor(pda_color, 6, 1, initial(pda_color))
 	key_bindings 	= sanitize_islist(key_bindings, list())
+	defiant	= sanitize_integer(defiant, FALSE, TRUE, TRUE)
 
 	//ROGUETOWN
 	parallax = PARALLAX_INSANE
@@ -311,6 +318,10 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["mute_animal_emotes"], mute_animal_emotes)
 	WRITE_FILE(S["autoconsume"], autoconsume)
 	WRITE_FILE(S["no_examine_blocks"], no_examine_blocks)
+	WRITE_FILE(S["no_autopunctuate"], no_autopunctuate)
+	WRITE_FILE(S["no_language_fonts"], no_language_fonts)
+	WRITE_FILE(S["no_language_icon"], no_language_icon)
+	WRITE_FILE(S["no_redflash"], no_redflash)
 	WRITE_FILE(S["crt"], crt)
 	WRITE_FILE(S["sexable"], sexable)
 	WRITE_FILE(S["shake"], shake)
@@ -356,11 +367,11 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["pda_style"], pda_style)
 	WRITE_FILE(S["pda_color"], pda_color)
 	WRITE_FILE(S["key_bindings"], key_bindings)
+	WRITE_FILE(S["defiant"], defiant)
 	return TRUE
 
 
 /datum/preferences/proc/_load_species(S, species_name = null)
-	testing("begin _load_species()")
 	if(!species_name)
 		S["species"] >> species_name
 
@@ -374,7 +385,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 			else
 				testing("spec_check() succeeded on type [newtype] and name [species_name].")
 		else
-			testing("GLOB.species_list failed on name [species_name], defaulting to [default_species].")
+
 			pref_species = new default_species.type()
 	else
 		pref_species = new default_species.type()
@@ -426,22 +437,8 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 		virtuetwo = new /datum/virtue/none
 
 /datum/preferences/proc/_load_loadout(S)
-	var/loadout_type
-	S["loadout"] >> loadout_type
-	if (loadout_type)
-		loadout = new loadout_type()
-
-/datum/preferences/proc/_load_loadout2(S)
-	var/loadout_type2
-	S["loadout2"] >> loadout_type2
-	if (loadout_type2)
-		loadout2 = new loadout_type2()
-
-/datum/preferences/proc/_load_loadout3(S)
-	var/loadout_type3
-	S["loadout3"] >> loadout_type3
-	if (loadout_type3)
-		loadout3 = new loadout_type3()
+	S["selected_loadout_items"] >> selected_loadout_items
+	selected_loadout_items = SANITIZE_LIST(selected_loadout_items)
 
 /datum/preferences/proc/_load_loadout_colours(S)
 	S["loadout_1_hex"] >> loadout_1_hex
@@ -471,6 +468,9 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	S["hair_color"]			>> hair_color
 	S["facial_hair_color"]	>> facial_hair_color
 	S["eye_color"]			>> eye_color
+	S["vampire_skin"]		>> vampire_skin
+	S["vampire_hair"]		>> vampire_hair
+	S["vampire_eyes"]		>> vampire_eyes
 	S["extra_language"]		>> extra_language
 	S["voice_color"]		>> voice_color
 	S["voice_pitch"]		>> voice_pitch
@@ -539,9 +539,6 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	_load_statpack(S)
 
 	_load_loadout(S)
-	_load_loadout2(S)
-	_load_loadout3(S)
-	_load_loadout_colours(S)
 
 	_load_combat_music(S)
 
@@ -592,13 +589,37 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	if(!valid_headshot_link(null, headshot_link, TRUE))
 		headshot_link = null
 
+	S["vampire_headshot_link"]			>> vampire_headshot_link
+	if(!valid_headshot_link(null, vampire_headshot_link, TRUE))
+		vampire_headshot_link = null
+
+	S["lich_headshot_link"]			>> lich_headshot_link
+	if(!valid_headshot_link(null, lich_headshot_link, TRUE))
+		lich_headshot_link = null
+
+//setting up the hooks for this, but not shown yet
+	S["werewolf_headshot_link"]			>> werewolf_headshot_link
+	if(!valid_headshot_link(null, werewolf_headshot_link, TRUE))
+		werewolf_headshot_link = null
+
+	S["qsr"] 			>> qsr_pref
 	S["flavortext"]			>> flavortext
 	S["ooc_notes"]			>> ooc_notes
 	S["ooc_extra"]			>> ooc_extra
+	S["rumour"]			>> rumour
+	S["noble_gossip"]			>> noble_gossip
 	S["song_artist"]		>> song_artist
 	S["song_title"]			>> song_title
 	S["nsfwflavortext"]	>> nsfwflavortext
+	S["nsfw_headshot_link"]		>> nsfw_headshot_link //TA edit
+	if(!valid_nsfw_headshot_link(null, nsfw_headshot_link, TRUE))
+		nsfw_headshot_link = null //TA edit end
 	S["erpprefs"]			>> erpprefs
+	S["preset_bounty_enabled"] >> preset_bounty_enabled
+	S["preset_bounty_poster_key"] >> preset_bounty_poster_key
+	S["preset_bounty_severity_key"] >> preset_bounty_severity_key
+	S["preset_bounty_severity_b_key"] >> preset_bounty_severity_b_key
+	S["preset_bounty_crime"] >> preset_bounty_crime
 
 	S["img_gallery"]	>> img_gallery
 	img_gallery = SANITIZE_LIST(img_gallery)
@@ -710,6 +731,9 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["hair_color"]			, hair_color)
 	WRITE_FILE(S["facial_hair_color"]	, facial_hair_color)
 	WRITE_FILE(S["eye_color"]			, eye_color)
+	WRITE_FILE(S["vampire_skin"]		, vampire_skin)
+	WRITE_FILE(S["vampire_hair"]		, vampire_hair)
+	WRITE_FILE(S["vampire_eyes"]		, vampire_eyes)
 	WRITE_FILE(S["extra_language"]		, extra_language)
 	WRITE_FILE(S["voice_color"]			, voice_color)
 	WRITE_FILE(S["voice_pitch"]			, voice_pitch)
@@ -764,9 +788,20 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["dnr"] , dnr_pref)
 	WRITE_FILE(S["update_mutant_colors"] , update_mutant_colors)
 	WRITE_FILE(S["headshot_link"] , headshot_link)
+	WRITE_FILE(S["vampire_headshot_link"] , vampire_headshot_link)
+	WRITE_FILE(S["werewolf_headshot_link"] , werewolf_headshot_link)
+	WRITE_FILE(S["lich_headshot_link"] , lich_headshot_link)
+	WRITE_FILE(S["qsr"] , qsr_pref)
+	WRITE_FILE(S["preset_bounty_enabled"] , preset_bounty_enabled)
+	WRITE_FILE(S["preset_bounty_poster_key"] , preset_bounty_poster_key)
+	WRITE_FILE(S["preset_bounty_severity_key"] , preset_bounty_severity_key)
+	WRITE_FILE(S["preset_bounty_severity_b_key"] , preset_bounty_severity_b_key)
+	WRITE_FILE(S["preset_bounty_crime"] , preset_bounty_crime)
 	WRITE_FILE(S["flavortext"] , html_decode(flavortext))
 	WRITE_FILE(S["ooc_notes"] , html_decode(ooc_notes))
 	WRITE_FILE(S["ooc_extra"] ,	ooc_extra)
+	WRITE_FILE(S["rumour"] , html_decode(rumour))
+	WRITE_FILE(S["noble_gossip"] , html_decode(noble_gossip))
 	WRITE_FILE(S["song_artist"] , song_artist)
 	WRITE_FILE(S["song_title"] , song_title)
 	WRITE_FILE(S["char_accent"] , char_accent)
@@ -779,21 +814,11 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["combat_music"], combat_music.type)
 	WRITE_FILE(S["body_size"] , features["body_size"])
 	WRITE_FILE(S["nsfwflavortext"] , html_decode(nsfwflavortext))
+	WRITE_FILE(S["nsfw_headshot_link"] , nsfw_headshot_link) //TA edit
 	WRITE_FILE(S["erpprefs"] , html_decode(erpprefs))
 	WRITE_FILE(S["img_gallery"] , img_gallery)
-
-	if(loadout)
-		WRITE_FILE(S["loadout"] , loadout.type)
-	else
-		WRITE_FILE(S["loadout"] , null)
-	if(loadout2)
-		WRITE_FILE(S["loadout2"] , loadout2.type)
-	else
-		WRITE_FILE(S["loadout2"] , null)
-	if(loadout3)
-		WRITE_FILE(S["loadout3"] , loadout3.type)
-	else
-		WRITE_FILE(S["loadout3"] , null)
+	
+	WRITE_FILE(S["selected_loadout_items"], selected_loadout_items)
 
 	//Familiar Files
 	WRITE_FILE(S["familiar_name"] , familiar_prefs.familiar_name)
@@ -804,7 +829,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["familiar_ooc_notes"] , familiar_prefs.familiar_ooc_notes)
 	WRITE_FILE(S["familiar_ooc_extra"] , familiar_prefs.familiar_ooc_extra)
 	WRITE_FILE(S["familiar_ooc_extra_link"] , familiar_prefs.familiar_ooc_extra_link)
-	
+
 	WRITE_FILE(S["loadout_1_hex"], loadout_1_hex)
 	WRITE_FILE(S["loadout_2_hex"], loadout_2_hex)
 	WRITE_FILE(S["loadout_3_hex"], loadout_3_hex)

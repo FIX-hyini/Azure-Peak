@@ -1,6 +1,8 @@
 /mob/living/simple_animal/hostile/retaliate/rogue/elemental/behemoth
 	icon = 'icons/mob/summonable/32x64.dmi'
 	name = "earthen behemoth"
+	desc = "A large earthen construct of dirt and rock, lumbering with the strength of eons. \
+	A rare sight, said to be a sign of severe imbalance that requires correction."
 	summon_primer = "You are an behemoth, a large elemental. Elementals such as yourself often lead groups of wardens in defending your plane. Now you've been pulled from your home into a new world, that is decidedly less peaceful then your carefully guarded plane. How you react to these events, only time can tell."
 	summon_tier = 3
 	icon_state = "behemoth"
@@ -154,7 +156,7 @@
 	var/turf/focalpoint = target_turf
 	for (var/turf/open/visual in view(1, focalpoint))
 		new /obj/effect/temp_visual/marker(visual)
-	sleep(1.5 SECONDS)
+	stoplag(1.5 SECONDS)
 	for (var/mob/living/screenshaken in view(1, focalpoint))
 		shake_camera(screenshaken, 5, 5)
 	for (var/mob/living/shaken in view(1, focalpoint))

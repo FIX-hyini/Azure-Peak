@@ -13,7 +13,7 @@
 	max_integrity = 400
 	slot_flags = ITEM_SLOT_HIP
 	toolspeed = 1
-	associated_skill = /datum/skill/labor/mining
+	associated_skill = null
 	smeltresult = /obj/item/ingot/iron
 	grid_width = 64
 	grid_height = 64
@@ -57,6 +57,17 @@
 	gripped_intents = list(/datum/intent/pick)
 	max_integrity = 600
 	smeltresult = /obj/item/ingot/steel
+
+/obj/item/rogueweapon/pick/blacksteel
+	name = "blacksteel pick"
+	desc = "Glimmering with silver-y black, this is a pretigious tool for miners delving in the darkness."
+	force_wielded = 30
+	icon_state = "blacksteelpick1"
+	item_state = "blacksteelpick1"
+	possible_item_intents = list(/datum/intent/pick)
+	gripped_intents = list(/datum/intent/pick)
+	max_integrity = 800
+	smeltresult = /obj/item/ingot/blacksteel
 
 /obj/item/rogueweapon/pick/stone
 	name = "stone pick"

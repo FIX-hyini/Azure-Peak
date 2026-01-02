@@ -16,12 +16,13 @@
 		In return, you have proven time and time again as justicar and trusted advisor to their reign."
 	outfit = /datum/outfit/job/roguetown/magician
 	whitelist_req = TRUE
-	give_bank_account = 47
-	min_pq = 4 //High potential for abuse, lovepotion/killersice/greater fireball is not for the faint of heart
+	give_bank_account = TRUE
+	min_pq = 14 //High potential for abuse, lovepotion/killersice/greater fireball is not for the faint of heart
 	max_pq = null
 	round_contrib_points = 2
 	cmode_music = 'sound/music/cmode/nobility/combat_courtmage.ogg'
 	advclass_cat_rolls = list(CTAG_COURTMAGE = 2)
+	same_job_respawn_delay = 30 MINUTES
 
 	// Can't get very far as a magician if you can't chant spells now can you?
 	vice_restrictions = list(/datum/charflaw/mute)
@@ -48,6 +49,7 @@
 		STATKEY_CON = -1,
 	)
 	subclass_skills = list(
+		/datum/skill/combat/staves = SKILL_LEVEL_JOURNEYMAN,
 		/datum/skill/combat/polearms = SKILL_LEVEL_JOURNEYMAN,
 		/datum/skill/combat/swords = SKILL_LEVEL_APPRENTICE,
 		/datum/skill/combat/knives = SKILL_LEVEL_APPRENTICE,
@@ -106,6 +108,7 @@
 	shirt = /obj/item/clothing/suit/roguetown/shirt/undershirt
 	pants = /obj/item/clothing/under/roguetown/tights/random
 	shoes = /obj/item/clothing/shoes/roguetown/shortboots
+	saiga_shoes = /obj/item/clothing/shoes/roguetown/horseshoes
 	belt = /obj/item/storage/belt/rogue/leather/plaquesilver
 	beltr = /obj/item/storage/keyring/mage
 	beltl = /obj/item/storage/magebag/associate
@@ -120,3 +123,5 @@
 		/obj/item/book/spellbook,
 		/obj/item/rogueweapon/huntingknife/idagger/silver/arcyne
 	)
+	if(H.mind)
+		SStreasury.give_money_account(ECONOMIC_RICH, H, "Savings.")

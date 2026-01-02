@@ -53,7 +53,9 @@
 	desc = ""
 	icon_state = "psydonmusicbox"
 	icon = 'icons/roguetown/items/misc.dmi'
-	w_class = WEIGHT_CLASS_HUGE
+	w_class = WEIGHT_CLASS_BULKY
+	slot_flags = ITEM_SLOT_BACK
+	experimental_onback = TRUE
 	var/cranking = FALSE
 	force = 15
 	max_integrity = 100
@@ -61,7 +63,7 @@
 	gripped_intents = list(/datum/intent/hit)
 	possible_item_intents = list(/datum/intent/hit)
 	obj_flags = CAN_BE_HIT
-	twohands_required = TRUE
+	twohands_required = FALSE
 	var/datum/looping_sound/psydonmusicboxsound/soundloop
 
 /obj/item/psydonmusicbox/examine(mob/user)
@@ -105,6 +107,14 @@
 		icon_state = "psydonmusicbox"
 
 /obj/item/psydonmusicbox/dropped(mob/living/user, silent)
+	..()
+	cranking = FALSE
+	update_icon()
+	if(soundloop)
+		soundloop.stop()
+		user.remove_status_effect(/datum/status_effect/buff/cranking_soulchurner)
+
+/obj/item/psydonmusicbox/equipped(mob/living/user, silent)
 	..()
 	cranking = FALSE
 	update_icon()
@@ -173,25 +183,29 @@
 					if(/datum/patron/inhumen/matthios)
 						to_chat(H, (span_hypnophrase("A voice calls out from the song for you...")))
 						to_chat(H, (span_cultsmall(pick(matthioslines))))
-						H.add_stress(/datum/stressevent/soulchurner)
+						H.add_stress(/datum/stressevent/soulchurnerheretic)
+						H.apply_status_effect(/datum/status_effect/debuff/nekoldun)
 						if(!H.has_status_effect(/datum/status_effect/buff/churnernegative))
 							H.apply_status_effect(/datum/status_effect/buff/churnernegative)
 					if(/datum/patron/inhumen/zizo)
 						to_chat(H, (span_hypnophrase("A voice calls out from the song for you...")))
 						to_chat(H, (span_cultsmall(pick(zizolines))))
-						H.add_stress(/datum/stressevent/soulchurner)
+						H.add_stress(/datum/stressevent/soulchurnerheretic)
+						H.apply_status_effect(/datum/status_effect/debuff/nekoldun)
 						if(!H.has_status_effect(/datum/status_effect/buff/churnernegative))
 							H.apply_status_effect(/datum/status_effect/buff/churnernegative)
 					if(/datum/patron/inhumen/graggar)
 						to_chat(H, (span_hypnophrase("A voice calls out from the song for you...")))
 						to_chat(H, (span_cultsmall(pick(graggarlines))))
-						H.add_stress(/datum/stressevent/soulchurner)
+						H.add_stress(/datum/stressevent/soulchurnerheretic)
+						H.apply_status_effect(/datum/status_effect/debuff/nekoldun)
 						if(!H.has_status_effect(/datum/status_effect/buff/churnernegative))
 							H.apply_status_effect(/datum/status_effect/buff/churnernegative)
 					if(/datum/patron/inhumen/baotha)
 						to_chat(H, (span_hypnophrase("A voice calls out from the song for you...")))
 						to_chat(H, (span_cultsmall(pick(baothalines))))
-						H.add_stress(/datum/stressevent/soulchurner)
+						H.add_stress(/datum/stressevent/soulchurnerheretic)
+						H.apply_status_effect(/datum/status_effect/debuff/nekoldun)
 						if(!H.has_status_effect(/datum/status_effect/buff/churnernegative))
 							H.apply_status_effect(/datum/status_effect/buff/churnernegative)
 					if(/datum/patron/divine/undivided)
@@ -204,60 +218,70 @@
 						to_chat(H, (span_hypnophrase("A voice calls out from the song for you...")))
 						to_chat(H, (span_cultsmall(pick(astratanlines))))
 						H.add_stress(/datum/stressevent/soulchurner)
+						H.apply_status_effect(/datum/status_effect/debuff/nekoldun)
 						if(!H.has_status_effect(/datum/status_effect/buff/churnernegative))
 							H.apply_status_effect(/datum/status_effect/buff/churnernegative)
 					if(/datum/patron/divine/noc)
 						to_chat(H, (span_hypnophrase("A voice calls out from the song for you...")))
 						to_chat(H, (span_cultsmall(pick(noclines))))
 						H.add_stress(/datum/stressevent/soulchurner)
+						H.apply_status_effect(/datum/status_effect/debuff/nekoldun)
 						if(!H.has_status_effect(/datum/status_effect/buff/churnernegative))
 							H.apply_status_effect(/datum/status_effect/buff/churnernegative)
 					if(/datum/patron/divine/necra)
 						to_chat(H, (span_hypnophrase("A voice calls out from the song for you...")))
 						to_chat(H, (span_cultsmall(pick(necralines))))
 						H.add_stress(/datum/stressevent/soulchurner)
+						H.apply_status_effect(/datum/status_effect/debuff/nekoldun)
 						if(!H.has_status_effect(/datum/status_effect/buff/churnernegative))
 							H.apply_status_effect(/datum/status_effect/buff/churnernegative)
 					if(/datum/patron/divine/pestra)
 						to_chat(H, (span_hypnophrase("A voice calls out from the song for you...")))
 						to_chat(H, (span_cultsmall(pick(pestralines))))
 						H.add_stress(/datum/stressevent/soulchurner)
+						H.apply_status_effect(/datum/status_effect/debuff/nekoldun)
 						if(!H.has_status_effect(/datum/status_effect/buff/churnernegative))
 							H.apply_status_effect(/datum/status_effect/buff/churnernegative)
 					if(/datum/patron/divine/malum)
 						to_chat(H, (span_hypnophrase("A voice calls out from the song for you...")))
 						to_chat(H, (span_cultsmall(pick(malumlines))))
 						H.add_stress(/datum/stressevent/soulchurner)
+						H.apply_status_effect(/datum/status_effect/debuff/nekoldun)
 						if(!H.has_status_effect(/datum/status_effect/buff/churnernegative))
 							H.apply_status_effect(/datum/status_effect/buff/churnernegative)
 					if(/datum/patron/divine/dendor)
 						to_chat(H, (span_hypnophrase("A voice calls out from the song for you...")))
 						to_chat(H, (span_cultsmall(pick(dendorlines))))
 						H.add_stress(/datum/stressevent/soulchurner)
+						H.apply_status_effect(/datum/status_effect/debuff/nekoldun)
 						if(!H.has_status_effect(/datum/status_effect/buff/churnernegative))
 							H.apply_status_effect(/datum/status_effect/buff/churnernegative)
 					if(/datum/patron/divine/xylix)
 						to_chat(H, (span_hypnophrase("A voice calls out from the song for you...")))
 						to_chat(H, (span_cultsmall(pick(xylixlines))))
 						H.add_stress(/datum/stressevent/soulchurner)
+						H.apply_status_effect(/datum/status_effect/debuff/nekoldun)
 						if(!H.has_status_effect(/datum/status_effect/buff/churnernegative))
 							H.apply_status_effect(/datum/status_effect/buff/churnernegative)
 					if(/datum/patron/divine/eora)
 						to_chat(H, (span_hypnophrase("A voice calls out from the song for you...")))
 						to_chat(H, (span_cultsmall(pick(eoralines))))
 						H.add_stress(/datum/stressevent/soulchurner)
+						H.apply_status_effect(/datum/status_effect/debuff/nekoldun)
 						if(!H.has_status_effect(/datum/status_effect/buff/churnernegative))
 							H.apply_status_effect(/datum/status_effect/buff/churnernegative)
 					if(/datum/patron/divine/abyssor)
 						to_chat(H, (span_hypnophrase("A voice calls out from the song for you...")))
 						to_chat(H, (span_cultsmall(pick(abyssorlines))))
 						H.add_stress(/datum/stressevent/soulchurner)
+						H.apply_status_effect(/datum/status_effect/debuff/nekoldun)
 						if(!H.has_status_effect(/datum/status_effect/buff/churnernegative))
 							H.apply_status_effect(/datum/status_effect/buff/churnernegative)
 					if(/datum/patron/divine/ravox)
 						to_chat(H, (span_hypnophrase("A voice calls out from the song for you...")))
 						to_chat(H, (span_cultsmall(pick(ravoxlines))))
 						H.add_stress(/datum/stressevent/soulchurner)
+						H.apply_status_effect(/datum/status_effect/debuff/nekoldun)
 						if(!H.has_status_effect(/datum/status_effect/buff/churnernegative))
 							H.apply_status_effect(/datum/status_effect/buff/churnernegative)
 /*
@@ -553,7 +577,8 @@ Inquisitorial armory down here
 	playsound(src, 'sound/items/indexer_working.ogg', 75, FALSE, 3)
 	if(active && working && !full)
 		if(do_after(user, 20, FALSE, M))
-			M.flash_fullscreen("redflash3")
+			if(M.show_redflash())
+				M.flash_fullscreen("redflash3")
 			subject = M
 			if(!HAS_TRAIT(M, TRAIT_NOPAIN) || !HAS_TRAIT(M, TRAIT_NOPAINSTUN))
 				if(prob(15))
@@ -954,7 +979,6 @@ Inquisitorial armory down here
 	break_sound = 'sound/foley/cloth_rip.ogg'
 	drop_sound = 'sound/foley/dropsound/cloth_drop.ogg'
 	armor = ARMOR_BLACKBAG
-	prevent_crits = list(BCLASS_CUT, BCLASS_BLUNT, BCLASS_TWIST, BCLASS_PEEL, BCLASS_PIERCE, BCLASS_CHOP, BCLASS_LASHING, BCLASS_STAB)
 	unequip_delay_self = 45
 	equip_delay_other = 360 SECONDS // No getting around it. Cheater. LEFT CLICK THEM!!!
 	equip_delay_self = 360 SECONDS
@@ -1230,7 +1254,8 @@ Inquisitorial armory down here
 			user.visible_message(span_notice("[user] presses upon [src]'s needle."))
 			if(do_after(user, 30))
 				playsound(src, 'sound/items/blackmirror_needle.ogg', 95, FALSE, 3)
-				user.flash_fullscreen("redflash3")
+				if(M.show_redflash())
+					user.flash_fullscreen("redflash3")
 				user.adjustBruteLoss(40)
 				user.blood_volume = max(user.blood_volume-240, 0)
 				user.handle_blood()
@@ -1243,7 +1268,8 @@ Inquisitorial armory down here
 			user.visible_message(span_notice("[user] goes to press [M] with [src]'s needle."))
 			if(do_after(user, 60, target = M))	
 				playsound(M, 'sound/items/blackmirror_needle.ogg', 95, FALSE, 3)
-				M.flash_fullscreen("redflash3")
+				if(M.show_redflash())
+					M.flash_fullscreen("redflash3")
 				M.blood_volume = max(user.blood_volume-240, 0)
 				M.adjustBruteLoss(40)
 				M.handle_blood()

@@ -163,6 +163,7 @@ SUBSYSTEM_DEF(vote)
 					to_chat(world, "\n<font color='purple'>[ROUND_END_TIME_VERBAL]</font>")
 					SSgamemode.roundvoteend = TRUE
 					SSgamemode.round_ends_at = world.time + ROUND_END_TIME
+					world.TgsAnnounceVoteEndRound()
 			if("storyteller")
 				SSgamemode.storyteller_vote_result(.)
 
@@ -242,7 +243,7 @@ SUBSYSTEM_DEF(vote)
 			if("restart")
 				choices.Add("Restart Round","Continue Playing")
 			if("gamemode")
-				choices.Add(config.votable_modes)
+				choices.Add(config.votable_modes)	
 			if("map")
 				for(var/map in global.config.maplist)
 					var/datum/map_config/VM = config.maplist[map]
@@ -272,6 +273,8 @@ SUBSYSTEM_DEF(vote)
 				vote_height = 800 // Give more room for storyteller
 			else
 				return 0
+		message_admins(span_danger("Admin [key_name_admin(usr)] start a vote of [vote_type]!"))
+		log_admin("Admin [key_name_admin(usr)] start a vote of [vote_type]!")
 		mode = vote_type
 		initiator = initiator_key
 		started_time = world.time
@@ -303,7 +306,7 @@ SUBSYSTEM_DEF(vote)
 		return 1
 	return 0
 
-// Helper for sending an active vote to someone who has just logged in 
+// Helper for sending an active vote to someone who has just logged in
 /datum/controller/subsystem/vote/proc/send_vote(client/C)
 	if(!mode || !C)
 		return

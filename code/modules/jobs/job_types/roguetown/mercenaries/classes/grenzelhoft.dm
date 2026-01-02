@@ -37,7 +37,7 @@
 	..()
 	to_chat(H, span_warning("You are a Doppelsoldner - \"Double-pay Mercenary\" - an experienced frontline swordsman trained by the Zenitstadt fencing guild."))
 	backl = /obj/item/rogueweapon/scabbard/gwstrap
-	armor = /obj/item/clothing/suit/roguetown/armor/plate/blacksteel_half_plate
+	armor = /obj/item/clothing/suit/roguetown/armor/plate/cuirass/blacksteel
 	if(H.mind)
 		var/weapons = list("Zweihander", "Kriegmesser & Buckler")
 		var/weapon_choice = input(H, "Choose your weapon.", "TAKE UP ARMS") as anything in weapons
@@ -99,7 +99,7 @@
 	..()
 	to_chat(H, span_warning("You're an experienced soldier skilled in the use of polearms and axes. Your equals make up the bulk of the mercenary guild's forces."))
 	backl = /obj/item/rogueweapon/scabbard/gwstrap
-	armor = /obj/item/clothing/suit/roguetown/armor/plate/blacksteel_half_plate
+	armor = /obj/item/clothing/suit/roguetown/armor/plate/cuirass/blacksteel
 	if(H.mind)
 		var/weapons = list("Halberd", "Partizan")
 		var/weapon_choice = input(H, "Choose your weapon.", "TAKE UP ARMS") as anything in weapons
@@ -132,7 +132,7 @@
 	name = "Armbrustschutze"
 	tutorial = "You're a proved marksman with a crossbow, and learned how to set up camp and defenses in the wild. The guild needs you."
 	outfit = /datum/outfit/job/roguetown/mercenary/grenzelhoft_crossbowman
-	traits_applied = list(TRAIT_DODGEEXPERT, TRAIT_STEELHEARTED)
+	traits_applied = list(TRAIT_STEELHEARTED, TRAIT_SURVIVAL_EXPERT)
 	subclass_stats = list(
 		STATKEY_SPD = 2,
 		STATKEY_WIL = 2,
@@ -183,12 +183,14 @@
 	pants = /obj/item/clothing/under/roguetown/heavy_leather_pants/grenzelpants
 	shoes = /obj/item/clothing/shoes/roguetown/grenzelhoft
 	gloves = /obj/item/clothing/gloves/roguetown/angle/grenzelgloves
-	backr = /obj/item/storage/backpack/rogue/satchel/black
+	backl = /obj/item/storage/backpack/rogue/backpack
 	backpack_contents = list(
 		/obj/item/roguekey/mercenary = 1,
 		/obj/item/storage/belt/rogue/pouch/coins/poor = 1,
 		/obj/item/flashlight/flare/torch = 1,
 		/obj/item/rogueweapon/huntingknife = 1,
+		/obj/item/flint = 1,
+		/obj/item/bedroll = 1,
 		/obj/item/rogueweapon/scabbard/sheath = 1
 		)
 	H.merctype = 7
@@ -201,7 +203,7 @@
 	outfit = /datum/outfit/job/roguetown/mercenary/grenzelhoft_mage
 	class_select_category = CLASS_CAT_GRENZELHOFT
 	category_tags = list(CTAG_MERCENARY)
-	cmode_music = 'sound/music/combat_grenzelhoft.ogg'
+	cmode_music = 'modular_twilight_axis/sound/music/combat_grenzelhoft_mage.ogg' //TA EDIT
 	subclass_languages = list(/datum/language/grenzelhoftian)
 	traits_applied = list(TRAIT_MAGEARMOR, TRAIT_INTELLECTUAL, TRAIT_STEELHEARTED, TRAIT_ALCHEMY_EXPERT)
 	subclass_stats = list(
@@ -213,6 +215,7 @@
 	)
 	subclass_skills = list(
 		/datum/skill/magic/arcane = SKILL_LEVEL_JOURNEYMAN,
+		/datum/skill/combat/staves = SKILL_LEVEL_JOURNEYMAN,
 		/datum/skill/combat/polearms = SKILL_LEVEL_JOURNEYMAN,
 		/datum/skill/combat/wrestling = SKILL_LEVEL_APPRENTICE,
 		/datum/skill/combat/unarmed = SKILL_LEVEL_APPRENTICE,
@@ -232,7 +235,7 @@
 	to_chat(H, span_warning("You are a Gefechtgelehrter - \"Combat Scholar\" - A proud magos from the Celestial Academy of Magos, who's skills in Siege Magic and Arcyne Physics are unmatched."))
 	belt = /obj/item/storage/belt/rogue/leather/battleskirt
 	backl = /obj/item/rogueweapon/woodstaff/emerald/blacksteelstaff
-	cloak = /obj/item/clothing/cloak/stabard/grenzelmage
+	cloak = /obj/item/clothing/cloak/tabard/stabard/grenzelmage
 	armor = /obj/item/clothing/suit/roguetown/armor/brigandine/light
 	//General gear regardless of class.
 	wrists = /obj/item/clothing/wrists/roguetown/bracers

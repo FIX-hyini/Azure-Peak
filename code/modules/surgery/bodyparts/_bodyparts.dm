@@ -97,6 +97,14 @@
 
 	/// Whether the bodypart has unlimited bleeding.
 	var/unlimited_bleeding = FALSE
+	
+	/// Cached variable that reflects how much bleeding our wounds are applying to the limb. Handled inside each individual wound.
+	var/bleeding = 0
+
+	/// Is the limb flagged for two-stage death handling? (aka, decaps will instantly kill first, THEN remove the head on second apply)
+	var/two_stage_death = FALSE
+	/// Has the limb been marked as having suffered a two-stage death flag?
+	var/grievously_wounded = FALSE
 
 	grid_width = 32
 	grid_height = 64
@@ -355,12 +363,13 @@
 	stamina_dam += round(CLAMP(stamina, 0, max_stamina_damage - stamina_dam), DAMAGE_PRECISION)
 
 	if(owner)
-		if((brute + burn) < 10)
-			owner.flash_fullscreen("redflash1")
-		else if((brute + burn) < 20)
-			owner.flash_fullscreen("redflash2")
-		else if((brute + burn) >= 20)
-			owner.flash_fullscreen("redflash3")
+		if(owner.show_redflash())
+			if((brute + burn) < 10)
+				owner.flash_fullscreen("redflash1")
+			else if((brute + burn) < 20)
+				owner.flash_fullscreen("redflash2")
+			else if((brute + burn) >= 20)
+				owner.flash_fullscreen("redflash3")
 
 	if(owner && updating_health)
 		owner.updatehealth()
@@ -568,6 +577,17 @@
 
 	return bodypart_organs
 
+/obj/item/bodypart/proc/get_visible_organs()
+	if(!owner)
+		return FALSE
+
+	var/list/bodypart_organs
+	for(var/obj/item/organ/organ_check as anything in owner.visible_organs) //internal organs inside the dismembered limb are dropped.
+		if(check_zone(organ_check.zone) == body_zone)
+			LAZYADD(bodypart_organs, organ_check) // this way if we don't have any, it'll just return null
+
+	return bodypart_organs
+
 //Gives you a proper icon appearance for the dismembered limb
 /obj/item/bodypart/proc/get_limb_icon(dropped, hideaux = FALSE)
 	icon_state = "" //to erase the default sprite, we're building the visual aspects of the bodypart through overlays alone.
@@ -671,9 +691,7 @@
 	
 	// Organ overlays
 	if(!skeletonized && draw_organ_features)
-		for(var/obj/item/organ/organ as anything in get_organs())
-			if(!organ.is_visible())
-				continue
+		for(var/obj/item/organ/organ as anything in get_visible_organs())
 			var/mutable_appearance/organ_appearance = organ.get_bodypart_overlay(src)
 			if(organ_appearance)
 				. += organ_appearance
