@@ -159,7 +159,9 @@
 /proc/log_vote(text)
 	if (CONFIG_GET(flag/log_vote))
 		WRITE_LOG(GLOB.world_game_log, "\[[logtime]] VOTE: [text]")
-
+/proc/log_telepathy(text)
+	if (CONFIG_GET(flag/log_telepathy))
+		WRITE_LOG(GLOB.world_game_log, "\[[logtime]\] ANTAG TELEPATHY: [text]")
 
 /proc/log_topic(text)
 	WRITE_LOG(GLOB.world_game_log, "\[[logtime]] TOPIC: [text]")

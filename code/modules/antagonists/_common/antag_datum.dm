@@ -18,6 +18,9 @@ GLOBAL_LIST_EMPTY(antagonists)
 	var/antag_hud_name
 	var/list/confess_lines
 
+	/// traits applied to the mob at on_gain() and removed at on_removal()
+	var/list/innate_traits = list()
+
 	//Antag panel properties
 	var/show_in_antagpanel = TRUE	//This will hide adding this antag type in antag panel, use only for internal subtypes that shouldn't be added directly but still show if possessed by mind
 	var/antagpanel_category = "Uncategorized"	//Antagpanel will display these together, REQUIRED

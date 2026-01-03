@@ -136,3 +136,12 @@
 	            /obj/item/clothing/head/roguetown/helmet/blacksteel/modern/armet = 1)
 	bypass_dupe_test = TRUE
 	craftdiff = 0
+
+/////////// CULT /////////////
+/obj/item/clothing/head/roguetown/helmet/skullcap/cult
+	name = "ominous hood"
+	desc = "It echoes with ominous laughter. Worn over a skullcap"
+	icon_state = "warlockhoodd"
+	flags_inv = HIDEEARS|HIDEFACE|HIDEHAIR|HIDEFACIALHAIR
+
+	body_parts_covered = NECK|HAIR|EARS|HEAD

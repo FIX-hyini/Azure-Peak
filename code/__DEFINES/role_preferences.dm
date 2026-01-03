@@ -15,6 +15,7 @@
 #define ROLE_DELF				"Dark Elf"
 #define ROLE_PREBEL				"Peasant Rebel"
 #define ROLE_ASPIRANT			"Aspirant"
+#define ROLE_ZIZOIDCULTIST		"Zizoid Cultist"
 #define ROLE_LICH				"Lich"
 #define ROLE_DREAMWALKER		"Dreamwalker"
 #define ROLE_ASCENDANT			"Ascendant"

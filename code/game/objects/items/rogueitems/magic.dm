@@ -41,6 +41,13 @@
 	// No longer on cooldown, so reset the extended cooldown flag if it was set
 	on_extended_cooldown = FALSE
 	return FALSE
+	
+/obj/item/scrying/eye
+	name = "accursed eye"
+	desc = "It is pulsating."
+	icon = 'icons/roguetown/items/misc.dmi'
+	icon_state ="scryeye"
+	cooldown = 5 MINUTES
 
 /obj/item/scrying/attack_self(mob/living/user)
 	. = ..()
@@ -78,6 +85,7 @@
 
 	var/break_on_fail = FALSE
 	var/failure_severity = 6 - arcane_skill
+
 
 	// Max severity: 6 (no arcane) + 6 (1 intelligence) + 4 (on cooldown) = 16
 	// For an Apprentice using the orb, 3-7 would be the realistic results, depending on whether the orb is on cooldown.

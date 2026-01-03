@@ -8,6 +8,7 @@
 #define ANTAG_HUD_TRAITOR 	1
 #define ANTAG_HUD_REV		2
 #define ANTAG_HUD_VAMPIRE	3
+#define ANTAG_HUD_ZIZOID "antag_hud_zizoid"
 // Notification action types
 #define NOTIFY_JUMP "jump"
 #define NOTIFY_ATTACK "attack"

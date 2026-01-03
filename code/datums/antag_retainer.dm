@@ -4,10 +4,13 @@
 	var/list/vampires = list()
 	var/list/death_knights = list()
 	var/list/werewolves = list()
+	var/list/cultists = list()
 	var/list/liches = list()
 	var/list/bandits = list()
 	var/list/dreamwalkers = list()
 
+	var/cult_ascended = FALSE
+	
 	//Minor antag types
 	var/list/wretches = list()
 	var/list/aspirants = list()

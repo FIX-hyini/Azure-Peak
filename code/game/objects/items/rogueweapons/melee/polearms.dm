@@ -1614,3 +1614,139 @@
 		added_int = 0,\
 		added_def = 0,\
 	)
+/obj/item/rogueweapon/zizo/neant
+	name = "neant"
+	desc = "A dark scythe with a long chain, used to cut the life essence from people, or whip them into shape. The blade is an ominous purple."
+	icon_state = "neant"
+	icon = 'icons/roguetown/weapons/64.dmi'
+	drop_sound = 'sound/foley/dropsound/blade_drop.ogg'
+	slot_flags = ITEM_SLOT_BACK
+	resistance_flags = FIRE_PROOF
+	dropshrink = 0.75
+	max_blade_int = 200
+	max_integrity = 720
+	possible_item_intents = list(/datum/intent/spear/cut/scythe)
+	gripped_intents = list(/datum/intent/axe/chop/scythe, /datum/intent/whip, /datum/intent/shoot/neant)
+	thrown_bclass = BCLASS_CUT
+	blade_dulling = DULLING_BASHCHOP
+	wdefense = 8
+	force = 20
+	force_wielded = 25
+	throwforce = 25
+	minstr = 10
+	sellprice = 550
+
+	COOLDOWN_DECLARE(fire_projectile)
+
+/obj/item/rogueweapon/zizo/neant/Initialize(mapload, ...)
+	. = ..()
+	AddElement(/datum/patron/inhumen/zizo, /datum/component/cursed_item, TRAIT_CABAL)
+
+/obj/item/rogueweapon/zizo/neant/attack(mob/living/M, mob/living/user)
+	if(user.used_intent.tranged)
+		return
+	return ..()
+
+/obj/item/rogueweapon/zizo/neant/afterattack(atom/target, mob/living/user, proximity_flag, click_parameters)
+	. = ..()
+	if(!HAS_TRAIT(user, TRAIT_CABAL) || !istype(user.patron, /datum/patron/inhumen/zizo))
+		return
+	if(user.used_intent?.tranged)
+		handle_magick(user, target)
+		return
+	if(!ishuman(target))
+		return
+	if(check_zone(user.zone_selected) != BODY_ZONE_CHEST)
+		return
+	var/mob/living/carbon/human/H = target
+	if(!H.has_status_effect(/datum/status_effect/debuff/devitalised))
+		return
+	var/dead = H.stat == DEAD
+	if((H.health < H.crit_threshold) || dead)
+		var/speed = dead ? 3 SECONDS : 7 SECONDS
+		visible_message(user, span_notice("Neant lights up and begins to tear at [target]..."))
+		if(!do_after(user, speed, H))
+			return
+		var/obj/item/bodypart/chest/C = H.get_bodypart(BODY_ZONE_CHEST)
+		if(!C)
+			return
+		playsound(get_turf(user), 'sound/surgery/scalpel2.ogg', 70)
+		if(do_after(user, 0.5 SECONDS, target))
+			C.add_wound(/datum/wound/slash/incision)
+
+		playsound(get_turf(user), 'sound/surgery/organ2.ogg', 70)
+		if(do_after(user, 0.5 SECONDS, target))
+			C.add_wound(/datum/wound/fracture/chest)
+
+		new /obj/item/reagent_containers/lux(get_turf(target))
+
+		H.apply_status_effect(/datum/status_effect/debuff/devitalised)
+		SEND_SIGNAL(user, COMSIG_LUX_EXTRACTED, target)
+		record_featured_stat(FEATURED_STATS_CRIMINALS, user)
+		record_round_statistic(STATS_LUX_HARVESTED)
+
+		H.add_splatter_floor()
+		H.adjustBruteLoss(20)
+		visible_message(user, span_notice("Neant's blade draws the lux from [target]!"))
+
+/obj/item/rogueweapon/zizo/neant/proc/handle_magick(mob/living/user, atom/target)
+	if(!COOLDOWN_FINISHED(src, fire_projectile))
+		return
+	var/client/client = user.client
+	if(!client?.chargedprog)
+		return
+
+	var/startloc = get_turf(src)
+	var/obj/projectile/bullet/neant/PJ = new(startloc)
+	PJ.starting = startloc
+	PJ.firer = user
+	PJ.fired_from = src
+	PJ.original = target
+	playsound(get_turf(user),'sound/effects/neantspecial.ogg', 70)
+
+	if(user.STAPER > 8)
+		PJ.accuracy += (user.STAPER - 8) * 2 //each point of perception above 8 increases standard accuracy by 2.
+		PJ.bonus_accuracy += (user.STAPER - 8) //Also, increases bonus accuracy by 1, which cannot fall off due to distance.
+
+	if(user.STAINT > 10) // Every point over 10 INT adds 10% damage
+		PJ.damage = PJ.damage * (user.STAINT / 10)
+		PJ.accuracy += (user.STAINT - 10) * 3
+
+	new /obj/effect/temp_visual/dir_setting/firing_effect/neant(get_step(user, user.dir), user.dir)
+	PJ.preparePixelProjectile(target, user)
+	PJ.fire()
+	user.changeNext_move(CLICK_CD_RANGE)
+	COOLDOWN_START(src, fire_projectile, 4 SECONDS)
+
+/obj/projectile/bullet/neant
+	name = "Profane Evisceration"
+	icon = 'icons/effects/effects.dmi'
+	icon_state = "neantprojectile"
+	hitsound = 'sound/combat/hits/hi_arrow2.ogg'
+	range = 8
+	damage = 20
+	armor_penetration = 30
+	damage_type = BRUTE
+	woundclass = BCLASS_CUT
+	flag =  "piercing"
+	speed = 1
+	accuracy = 80
+
+/obj/effect/temp_visual/dir_setting/firing_effect/neant
+	icon = 'icons/effects/effects.dmi'
+	icon_state = "neantspecial"
+	duration = 4
+
+/datum/intent/shoot/neant
+	name = "shoot"
+	icon_state = "inshoot"
+	warnie = "aimwarn"
+	tranged = TRUE
+	chargetime = 2 SECONDS
+	no_early_release = TRUE
+	noaa = TRUE
+	charging_slowdown = 2
+
+/datum/intent/shoot/neant/prewarning()
+	if(mastermob)
+		mastermob.visible_message(span_warning("[mastermob] draws [masteritem]!"))

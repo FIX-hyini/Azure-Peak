@@ -58,3 +58,6 @@
 
 /// Create an typed null global
 #define GLOBAL_DATUM(X, Typepath) GLOBAL_RAW(Typepath/##X); GLOBAL_UNMANAGED(X)
+
+//All characters between < a > inclusive of the bracket
+GLOBAL_DATUM_INIT(html_tags, /regex, regex(@"<.*?>", "g"))

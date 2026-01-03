@@ -213,3 +213,34 @@
 	walk_to_last_pos = null
 	walk_to_cached_path = null
 
+/// Fully randomizes everything in the character.
+// Reflect changes in [datum/preferences/proc/randomise_appearance_prefs]
+/mob/living/carbon/human/proc/randomize_human_appearance(randomise_flags = ALL, include_donator = TRUE)
+	if(!dna)
+		return
+
+	if(randomise_flags & RANDOMIZE_SPECIES)
+		var/rando_race = GLOB.species_list[pick(get_selectable_species(include_donator))]
+		set_species(new rando_race(), FALSE)
+
+	var/datum/species/species = dna.species
+
+	if(NOEYESPRITES in species?.species_traits)
+		randomise_flags &= ~RANDOMIZE_EYE_COLOR
+
+	if(randomise_flags & RANDOMIZE_GENDER)
+		gender = species.sexes ? pick(MALE, FEMALE) : PLURAL
+
+	if(randomise_flags & RANDOMIZE_AGE)
+		age = pick(species.possible_ages)
+
+	if(randomise_flags & RANDOMIZE_NAME)
+		real_name = species.random_name(gender, TRUE)
+
+	if(randomise_flags & RANDOMIZE_SKIN_TONE)
+		var/list/skin_list = species.get_skin_list()
+		skin_tone = pick_assoc(skin_list)
+
+	if(randomise_flags & RANDOMIZE_EYE_COLOR)
+		var/obj/item/organ/eyes/eyes = getorganslot(ORGAN_SLOT_EYES)
+		eyes.eye_color = random_eye_color()

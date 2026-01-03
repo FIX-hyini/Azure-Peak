@@ -403,3 +403,6 @@
 #define INQUISITION_ROLES \
 	/datum/job/roguetown/puritan,\
 	/datum/job/roguetown/orthodoxist
+
+//other
+#define FACTION_UNDEAD		"Undead"

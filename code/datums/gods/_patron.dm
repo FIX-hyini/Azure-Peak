@@ -29,7 +29,8 @@ GLOBAL_LIST_EMPTY(prayers)
 	var/list/miracles = list()
 	/// List of words that this god considers profane. (Master for all faiths. Inhumen have their own list.)
 	var/list/profane_words = list("zizo","matthios","graggar","baotha","cock","dick","fuck","shit","pussy","cuck","cunt","asshole","pintle")
-
+	///verbs applied by set_patron and removed when changed
+	var/list/added_verbs
 	/// List of traits associated with rank. Trait = Cleric_Tier
 	var/list/traits_tier = list()
 
@@ -43,6 +44,8 @@ GLOBAL_LIST_EMPTY(prayers)
 		pious.verbs += /mob/living/carbon/human/proc/emote_ffsalute
 	if (HAS_TRAIT(pious, TRAIT_CABAL))
 		pious.faction |= "cabal"
+	for(var/verb in added_verbs)
+		pious.verbs |= verb
 
 /datum/patron/proc/on_loss(mob/living/pious)
 	if (HAS_TRAIT(pious, TRAIT_CABAL))
@@ -51,6 +54,8 @@ GLOBAL_LIST_EMPTY(prayers)
 		pious.remove_language(/datum/language/thievescant)
 	for(var/trait in mob_traits)
 		REMOVE_TRAIT(pious, trait, "[type]")
+	for(var/verb in added_verbs)
+		pious.verbs -= verb
 
 /datum/patron/proc/post_equip(mob/living/pious)
 	return
