@@ -23,6 +23,7 @@
 
 /datum/antagonist/zizocultist/zizo_knight
 	change_stats = FALSE
+	name = "Zizoid's knight"
 
 /datum/antagonist/zizocultist/leader
 	name = "Zizoid Cultist"
