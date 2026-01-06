@@ -264,109 +264,16 @@
 
 /obj/effect/decal/cleanable/sigil/attack_hand(mob/living/user)
 	. = ..()
-	if(icon_state != "center") // fucking awful but it has to be this way
+	if(.)
 		return
+	
+	if(!sigil_type)
+		return
+	
 	if(!istype(user.patron, /datum/patron/inhumen/zizo))
 		return
-	var/list/rituals_pre = list()
-	switch(sigil_type)
-		if("Transmutation")
-			rituals_pre = subtypesof(/datum/ritual/transmutation)
-		if("Fleshcrafting")
-			rituals_pre = subtypesof(/datum/ritual/fleshcrafting)
-		if("Servantry")
-			rituals_pre = subtypesof(/datum/ritual/servantry)
-	if(!length(rituals_pre))
-		return
-	var/list/rituals = list()
-	for(var/datum/ritual/ritual as anything in rituals_pre)
-		if(is_abstract(ritual))
-			continue
-		if(initial(ritual.is_cultist_ritual) && !(is_zizocultist(user.mind) || is_zizolackey(user.mind))) // some rituals are cultist exclusive
-			continue
-		rituals += initial(ritual.name)
-
-	var/ritualnameinput = input(user, "Rituals", "ZIZO", rituals)
-	if(!ritualnameinput)
-		return
-
-	var/datum/ritual/pickritual = LAZYACCESS(GLOB.ritualslist, ritualnameinput)
-	if(!pickritual)
-		return
-
-	var/cardinal_success = FALSE
-	var/center_success = FALSE
-	var/dews = 0
-
-	if(pickritual.e_req)
-		for(var/atom/A in get_step(src, EAST))
-			if(istype(A, pickritual.e_req))
-				dews++
-				break
-			else
-				continue
-	else
-		dews++
-
-	if(pickritual.s_req)
-		for(var/atom/A in get_step(src, SOUTH))
-			if(istype(A, pickritual.s_req))
-				dews++
-				break
-			else
-				continue
-	else
-		dews++
-
-	if(pickritual.w_req)
-		for(var/atom/A in get_step(src, WEST))
-			if(istype(A, pickritual.w_req))
-				dews++
-				break
-			else
-				continue
-	else
-		dews++
-
-	if(pickritual.n_req)
-		for(var/atom/A in get_step(src, NORTH))
-			if(istype(A, pickritual.n_req))
-				dews++
-				break
-			else
-				continue
-	else
-		dews++
-
-	if(dews >= 4)
-		cardinal_success = TRUE
-
-	for(var/atom/A in loc.contents)
-		if(!istype(A, pickritual.center_requirement))
-			continue
-		else
-			center_success = TRUE
-			break
-
-	var/badritualpunishment = FALSE
-	if(cardinal_success != TRUE)
-		if(badritualpunishment)
-			return
-		to_chat(user, span_danger("That's not how you do it, fool."))
-		user.electrocute_act(10, src)
-		return
-
-	if(center_success != TRUE)
-		if(badritualpunishment)
-			return
-		to_chat(user, span_danger("That's not how you do it, fool."))
-		user.electrocute_act(10, src)
-		return
-
-	consume_ingredients(pickritual)
-	user.playsound_local(user, 'sound/vo/cult/tesa.ogg', 25)
-	user.whisper("O'vena tesa...")
-	pickritual.invoke(user, loc)
+	
+	show_ritual_tgui(user)
 
 /obj/effect/decal/cleanable/sigil/N
 	icon_state = "N"

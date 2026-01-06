@@ -1,3 +1,4 @@
+/*
 /obj/effect/decal/cleanable/sigil
 	name = "sigils"
 	desc = "Strange runics."
@@ -27,3 +28,4 @@
 
 /obj/effect/decal/cleanable/sigil/NW
 	icon_state = "NW"
+*/

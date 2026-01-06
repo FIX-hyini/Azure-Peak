@@ -5,7 +5,7 @@ GLOBAL_LIST_INIT(ritualslist, build_zizo_rituals())
 	for(var/datum/ritual/ritual as anything in subtypesof(/datum/ritual))
 		if(is_abstract(ritual))
 			continue
-		.[ritual.name] = new ritual
+		.[initial(ritual.name)] = ritual
 
 // RITUAL DATUMS
 /datum/ritual
@@ -24,6 +24,126 @@ GLOBAL_LIST_INIT(ritualslist, build_zizo_rituals())
 
 /datum/ritual/proc/invoke(mob/living/user, turf/center)
 	return
+
+/obj/effect/decal/cleanable/sigil/proc/show_ritual_tgui(mob/living/user)
+	if(!user.client)
+		return
+	
+	var/list/available_rituals = list()
+	var/list/ritual_categories = list()
+	
+	switch(sigil_type)
+		if("Transmutation")
+			ritual_categories = subtypesof(/datum/ritual/transmutation)
+		if("Fleshcrafting")
+			ritual_categories = subtypesof(/datum/ritual/fleshcrafting)
+		if("Servantry")
+			ritual_categories = subtypesof(/datum/ritual/servantry)
+	
+	if(!length(ritual_categories))
+		return
+	
+	for(var/datum/ritual/ritual_type as anything in ritual_categories)
+		if(is_abstract(ritual_type))
+			continue
+		
+		var/ritual_name = initial(ritual_type.name)
+		var/is_cultist_only = initial(ritual_type.is_cultist_ritual)
+		
+		if(is_cultist_only && !(is_zizocultist(user.mind) || is_zizolackey(user.mind)))
+			continue
+		
+		available_rituals[ritual_name] = ritual_type
+	
+	if(!length(available_rituals))
+		to_chat(user, span_warning("No rituals for this rune."))
+		return
+	
+	var/chosen_ritual_name = tgui_input_list(user, "Choose Ritual:", "Rituals [sigil_type]", available_rituals)
+	if(!chosen_ritual_name || !user.Adjacent(src))
+		return
+	
+	var/ritual_type = available_rituals[chosen_ritual_name]
+	var/datum/ritual/pickritual = GLOB.ritualslist[chosen_ritual_name]
+	
+	if(!pickritual)
+		pickritual = new ritual_type()
+		GLOB.ritualslist[chosen_ritual_name] = pickritual
+	
+	var/cardinal_success = FALSE
+	var/center_success = FALSE
+	var/dews = 0
+
+	if(pickritual.e_req)
+		for(var/atom/A in get_step(src, EAST))
+			if(istype(A, pickritual.e_req))
+				dews++
+				break
+			else
+				continue
+	else
+		dews++
+
+	if(pickritual.s_req)
+		for(var/atom/A in get_step(src, SOUTH))
+			if(istype(A, pickritual.s_req))
+				dews++
+				break
+			else
+				continue
+	else
+		dews++
+
+	if(pickritual.w_req)
+		for(var/atom/A in get_step(src, WEST))
+			if(istype(A, pickritual.w_req))
+				dews++
+				break
+			else
+				continue
+	else
+		dews++
+
+	if(pickritual.n_req)
+		for(var/atom/A in get_step(src, NORTH))
+			if(istype(A, pickritual.n_req))
+				dews++
+				break
+			else
+				continue
+	else
+		dews++
+
+	if(dews >= 4)
+		cardinal_success = TRUE
+
+	for(var/atom/A in loc.contents)
+		if(!istype(A, pickritual.center_requirement))
+			continue
+		else
+			center_success = TRUE
+			break
+
+	var/badritualpunishment = FALSE
+	if(cardinal_success != TRUE)
+		if(badritualpunishment)
+			return
+		to_chat(user, span_danger("That's not how you do it, fool."))
+		user.electrocute_act(10, src)
+		return
+
+	if(center_success != TRUE)
+		if(badritualpunishment)
+			return
+		to_chat(user, span_danger("That's not how you do it, fool."))
+		user.electrocute_act(10, src)
+		return
+
+	consume_ingredients(pickritual)
+	user.playsound_local(user, 'sound/vo/cult/tesa.ogg', 25)
+	user.whisper("O'vena tesa...")
+	var/datum/ritual/ritual_instance = new ritual_type()
+	ritual_instance.invoke(user, loc)
 
 // SERVANTRY
 /datum/ritual/servantry
@@ -495,13 +615,13 @@ GLOBAL_LIST_INIT(ritualslist, build_zizo_rituals())
 	to_chat(cultist, span_notice("Stolen Arcane prowess floods my mind, ZIZO empowers me."))
 
 /datum/ritual/fleshcrafting/curse
-    name = "Hollow Curse"
-    center_requirement = /mob/living/carbon/human
+	name = "Hollow Curse"
+	center_requirement = /mob/living/carbon/human
 
-    w_req = /obj/item/alch/sinew
-    e_req = /obj/item/alch/sinew
-    n_req = /obj/item/natural/fur/wolf
-    s_req = /obj/item/natural/fur/wolf
+	w_req = /obj/item/alch/sinew
+	e_req = /obj/item/alch/sinew
+	n_req = /obj/item/natural/fur/wolf
+	s_req = /obj/item/natural/fur/wolf
 
 /datum/ritual/fleshcrafting/curse/invoke(mob/living/user, turf/center)
 	var/mob/living/carbon/human/target = locate() in center.contents
@@ -520,15 +640,15 @@ GLOBAL_LIST_INIT(ritualslist, build_zizo_rituals())
 	addtimer(CALLBACK(src, PROC_REF(get_hollowed), target, center), 5 SECONDS)
 
 /datum/ritual/fleshcrafting/curse/proc/get_hollowed(mob/living/victim, turf/place)
-    if(QDELETED(victim))
-        return
-    if(place != get_turf(victim))
-        return
-    if(!victim.mind)
-        return
-    var/mob/living/wll = new /mob/living/carbon/human/species/demihuman(place)
-    victim.mind.transfer_to(wll)
-    victim.gib()
+	if(QDELETED(victim))
+		return
+	if(place != get_turf(victim))
+		return
+	if(!victim.mind)
+		return
+	var/mob/living/wll = new /mob/living/carbon/human/species/demihuman(place)
+	victim.mind.transfer_to(wll)
+	victim.gib()
 
 /datum/ritual/fleshcrafting/nopain
 	name = "Painless Battle"
