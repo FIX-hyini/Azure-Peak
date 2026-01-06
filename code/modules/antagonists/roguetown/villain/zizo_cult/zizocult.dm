@@ -4,6 +4,7 @@
 	antagpanel_category = "Zizoid Cult"
 	job_rank = ROLE_ZIZOIDCULTIST
 	antag_hud_type = ANTAG_HUD_ZIZOID
+	rogue_enabled = TRUE
 	antag_hud_name = "zizoid_lackey"
 	confess_lines = list(
 		"DEATH TO THE TEN!",
