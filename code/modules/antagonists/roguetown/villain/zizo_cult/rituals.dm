@@ -49,7 +49,7 @@ GLOBAL_LIST_INIT(ritualslist, build_zizo_rituals())
 		to_chat(user, span_danger("They are wearing silver, it resists the dark magick!"))
 		return
 	var/datum/antagonist/zizocultist/PR = user.mind.has_antag_datum(/datum/antagonist/zizocultist)
-	var/alert = browser_alert(target, "YOU WILL BE SHOWN THE TRUTH. DO YOU RESIST?", "???", list("Yield", "Resist"))
+	var/alert = alert(target, "YOU WILL BE SHOWN THE TRUTH. DO YOU RESIST?", "???", list("Yield", "Resist"))
 	target.Immobilize(3 SECONDS)
 	if(alert == "Yield")
 		to_chat(target, span_notice("I see the truth now! It all makes so much sense! They aren't HERETICS! They want the BEST FOR US!"))
@@ -79,11 +79,10 @@ GLOBAL_LIST_INIT(ritualslist, build_zizo_rituals())
 		to_chat(target, span_danger("I will not let my followers become mindless brutes."))
 		return
 
-	var/datum/job/summon_job = SSjob.GetJobType(/datum/job/skeleton/zizoid)
-	target.mind?.set_assigned_role(summon_job)
-	target.dress_up_as_job(summon_job)
-	summon_job.after_spawn(target, target.client)
-	ADD_TRAIT(target, TRAIT_CABAL, TRAIT_GENERIC)
+	//var/datum/job/summon_job = SSjob.GetJobType(/datum/job/skeleton/zizoid)
+	//target.mind?.set_assigned_role(summon_job)
+	//summon_job.after_spawn(target, target.client)
+	//ADD_TRAIT(target, TRAIT_CABAL, TRAIT_GENERIC)
 
 	to_chat(target, span_userdanger("I am returned to serve. I will obey, so that I may return to rest."))
 	to_chat(target, span_userdanger("My master is [user]."))
@@ -309,7 +308,7 @@ GLOBAL_LIST_INIT(ritualslist, build_zizo_rituals())
 	if(!P)
 		return
 	var/info = STRIP_HTML_FULL(P.info, MAX_NAME_LEN)
-	var/input = browser_input_text(user, "To whom do we send this message?", "ZIZO")
+	var/input = input(user, "To whom do we send this message?", "ZIZO")
 	if(!input)
 		return
 	for(var/mob/living/carbon/human/HL in GLOB.human_list)
@@ -328,7 +327,7 @@ GLOBAL_LIST_INIT(ritualslist, build_zizo_rituals())
 
 	new /obj/item/clothing/head/roguetown/helmet/skullcap/cult(center)
 
-	new /obj/item/clothing/cloak/half/shadowcloak/cult(center)
+	//new /obj/item/clothing/cloak/half/shadowcloak/cult(center)
 
 	new /obj/item/rope/chain(center)
 
@@ -420,7 +419,7 @@ GLOBAL_LIST_INIT(ritualslist, build_zizo_rituals())
 
 	w_req = /obj/item/bodypart/l_leg
 	e_req = /obj/item/bodypart/r_leg
-	n_req = /obj/item/reagent_containers/food/snacks/meat
+	n_req = /obj/item/reagent_containers/food/snacks/rogue/meat/steak
 
 	is_cultist_ritual = TRUE
 
@@ -610,8 +609,8 @@ GLOBAL_LIST_INIT(ritualslist, build_zizo_rituals())
 		return
 	if(!victim.mind)
 		return
-	var/mob/living/trl = new /mob/living/simple_animal/hostile/retaliate/blood(place)
-	victim.mind.transfer_to(trl)
+	//var/mob/living/trl = new /mob/living/simple_animal/hostile/retaliate/blood(place)
+	//victim.mind.transfer_to(trl)
 	victim.gib()
 
 /datum/ritual/fleshcrafting/gutted
@@ -674,15 +673,15 @@ GLOBAL_LIST_INIT(ritualslist, build_zizo_rituals())
 	VIRGIN.gib()
 	RULER.gib()
 	SSmapping.retainer.cult_ascended = TRUE
-	addomen(list)(OMEN_ASCEND, OMEN_SUNSTEAL)
+	addomen(OMEN_ASCEND)
 	to_chat(cultist, span_userdanger("I HAVE DONE IT! I HAVE REACHED A HIGHER FORM! ZIZO SMILES UPON ME WITH MALICE IN HER EYES TOWARD THE ONES WHO LACK KNOWLEDGE AND UNDERSTANDING!"))
-	var/mob/living/trl = new /mob/living/simple_animal/hostile/retaliate/blood/ascended(center)
-	cultist.mind?.transfer_to(trl)
+	//var/mob/living/trl = new /mob/living/simple_animal/hostile/retaliate/blood/ascended(center)
+	//cultist.mind?.transfer_to(trl)
 	cultist.gib()
-	priority_announce("The sky blackens, a dark day for Psydonia.", "Ascension", 'sound/misc/gods/astrata_scream.ogg')
+	//priority_announce("The sky blackens, a dark day for Psydonia.", "Ascension", 'sound/misc/gods/astrata_scream.ogg')
 	for(var/mob/living/carbon/human/V in GLOB.human_list)
 		if(V.mind in SSmapping.retainer.cultists)
-			V.add_stress(/datum/stress_event/lovezizo)
+			//V.add_stress(/datum/stress_event/lovezizo)
 		else
-			V.add_stress(/datum/stress_event/hatezizo)
+			//V.add_stress(/datum/stress_event/hatezizo)
 	SSgamemode.roundvoteend = TRUE

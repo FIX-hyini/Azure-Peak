@@ -191,7 +191,7 @@
 		return
 	record_round_statistic(STATS_ZIZO_PRAISED)
 	audible_message("\The [src] praises <span class='bold'>Zizo</span>!")
-	playsound(src.loc, 'sound/vo/cult/praise.ogg', 45, 1)
+	playsound(src.loc, pick('sound/vo/cult/zizo1.ogg', 'sound/vo/cult/zizo2.ogg','sound/vo/cult/zizo3.ogg','sound/vo/cult/zizo4.ogg','sound/vo/cult/zizo5.ogg','sound/vo/cult/zizo6.ogg'), 100)
 	log_say("[src] has praised zizo! (zizo cultist verb)")
 
 /mob/living/carbon/human/proc/communicate()
@@ -213,7 +213,7 @@
 
 	for(var/datum/mind/V in SSmapping.retainer.cultists)
 		to_chat(V, "<span style = \"font-size:110%; font-weight:bold\"><span style = 'color:#8a13bd'>A message from </span><span style = 'color:#[H.voice_color]'>[src.real_name]</span>: [speak]</span>")
-		playsound_local(V.current, pick('sound/vo/cult/zizo1.ogg', 'sound/vo/cult/zizo2.ogg','sound/vo/cult/zizo3.ogg','sound/vo/cult/zizo4.ogg','sound/vo/cult/zizo5.ogg','sound/vo/cult/zizo6.ogg'),100)
+		playsound_local(V.current, 'sound/vo/cult/skvor.ogg',100)
 
 	log_telepathy("[key_name(src)] used cultist telepathy to say: [speak]")
 

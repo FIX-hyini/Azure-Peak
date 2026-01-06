@@ -21,8 +21,8 @@
 	)
 	storyteller = /datum/storyteller/zizo
 	added_verbs = list(
-		///mob/living/carbon/human/proc/draw_sigil,
-		///mob/living/carbon/human/proc/praise,
+		/mob/living/carbon/human/proc/draw_sigil,
+		/mob/living/carbon/human/proc/praise,
 	)
 
 /datum/patron/inhumen/zizo/post_equip(mob/living/pious)
