@@ -593,9 +593,9 @@ GLOBAL_LIST_INIT(ritualslist, build_zizo_rituals())
 	if(!target)
 		return
 	target.faction = list(FACTION_UNDEAD)
-	target.AddSpell(/obj/effect/proc_holder/spell/invoked/gravemark)
-	target.AddSpell(/obj/effect/proc_holder/spell/invoked/raise_undead_formation)
-	target.AddSpell(/obj/effect/proc_holder/spell/invoked/minion_order)
+	target.mind.AddSpell(new /obj/effect/proc_holder/spell/invoked/gravemark)
+	target.mind.AddSpell(new /obj/effect/proc_holder/spell/invoked/raise_undead_formation)
+	target.mind.AddSpell(new /obj/effect/proc_holder/spell/invoked/minion_order)
 	to_chat(target, span_notice("The undead bow down to my will."))
 
 /datum/ritual/fleshcrafting/arcane
@@ -697,7 +697,7 @@ GLOBAL_LIST_INIT(ritualslist, build_zizo_rituals())
 	target.change_stat(STATKEY_WIL, -4)
 	target.Knockdown(5 SECONDS)
 	target.emote("agony", forced = TRUE)
-	target.AddSpell(/obj/effect/proc_holder/spell/self/zizo_regenerate)
+	target.mind.AddSpell(new /obj/effect/proc_holder/spell/self/zizo_regenerate)
 
 /datum/ritual/fleshcrafting/fleshform
 	name = "Stronger Form"

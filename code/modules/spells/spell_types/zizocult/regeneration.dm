@@ -9,6 +9,7 @@
 	sound = 'sound/misc/vampirespell.ogg'
 	releasedrain = 30
 	antimagic_allowed = FALSE
+	ignore_cockblock = TRUE
 	var/static/list/purged_effects = list(
 	/datum/status_effect/incapacitating/immobilized,
 	/datum/status_effect/incapacitating/paralyzed,
