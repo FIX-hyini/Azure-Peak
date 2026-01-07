@@ -57,6 +57,7 @@
 	H.cmode_music = 'sound/music/combat_cult.ogg'
 	H.playsound_local(get_turf(H), 'sound/music/maniac.ogg', 80, FALSE, pressure_affected = FALSE)
 	H.verbs |= /mob/living/carbon/human/proc/communicate
+	add_antag_hud(antag_hud_type, antag_hud_name, owner.current)
 
 	if(change_stats)
 		H.change_stat(STATKEY_STR, 2)
