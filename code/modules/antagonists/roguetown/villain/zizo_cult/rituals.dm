@@ -199,10 +199,10 @@ GLOBAL_LIST_INIT(ritualslist, build_zizo_rituals())
 		to_chat(target, span_danger("I will not let my followers become mindless brutes."))
 		return
 
-	//var/datum/job/summon_job = SSjob.GetJobType(/datum/job/skeleton/zizoid)
-	//target.mind?.set_assigned_role(summon_job)
-	//summon_job.after_spawn(target, target.client)
-	//ADD_TRAIT(target, TRAIT_CABAL, TRAIT_GENERIC)
+	var/datum/job/summon_job = SSjob.GetJobType(/datum/job/roguetown/cult/skeleton)
+	target.mind?.set_assigned_role(summon_job)
+	summon_job.after_spawn(target, target.client)
+	ADD_TRAIT(target, TRAIT_CABAL, TRAIT_GENERIC)
 
 	to_chat(target, span_userdanger("I am returned to serve. I will obey, so that I may return to rest."))
 	to_chat(target, span_userdanger("My master is [user]."))
