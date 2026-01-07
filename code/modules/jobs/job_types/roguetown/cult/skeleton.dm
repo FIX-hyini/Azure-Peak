@@ -1,15 +1,18 @@
-/datum/job/skeleton
-	title = "Skeleton"
+/datum/job/skeleton/zizoid
+	title = "Skeleton-cultist"
 	tutorial = null
 	department_flag = MOB_UNDEAD
 	job_flags = (JOB_EQUIP_RANK)
-	faction = FACTION_UNDEAD
+	faction = "Station"
 	total_positions = 0
 	spawn_positions = 0
-	antag_job = TRUE
+	show_in_credits = FALSE
+	give_bank_account = FALSE
+	hidden_job = TRUE
+	announce_latejoin = FALSE
 	allowed_races = ALL_RACES_TYPES
-	cmode_music = 'sound/music/cmode/antag/combatskeleton.ogg'
-	outfit = /datum/outfit/skeleton
+	cmode_music = 'sound/music/cmode/antag/combat_cult.ogg'
+	outfit = /datum/outfit/skeleton/zizoid
 	give_bank_account = FALSE
 	languages = list(/datum/language/undead)
 
@@ -26,144 +29,76 @@
 	)
 
 
-/datum/job/skeleton/after_spawn(mob/living/carbon/human/spawned, client/player_client)
+/datum/outfit/job/skeleton/zizoid/pre_equip(mob/living/carbon/human/H)
 	. = ..()
+	H.set_patron(/datum/patron/inhumen/zizo)
 
-	spawned.mind.special_role = "Skeleton"
-	spawned.mind?.current.job = null
+	H.possible_rmb_intents = list(/datum/rmb_intent/feint,\
+	/datum/rmb_intent/aimed,\
+	/datum/rmb_intent/riposte,\
+	/datum/rmb_intent/strong,\
+	/datum/rmb_intent/weak)
+	H.swap_rmb_intent(num=1)
 
-	// Randomize stats here
-	H.STASTR = rand(1, 21)
-	H.STAWIL = rand(1, 21)
-	H.STACON = rand(1, 21)
+	var/datum/antagonist/new_antag = new /datum/antagonist/skeleton()
+	H.mind.add_antag_datum(new_antag)
+
+	H.grant_language(/datum/language/undead)
+
+	var/datum/language_holder/language_holder = H.get_language_holder()
+	language_holder.selected_default_language = /datum/language/undead
+
+	H.STASTR = rand(7, 13)
+	H.STAWIL = rand(7, 12)
+	H.STACON = rand(8, 13)
 	H.STAINT = rand(1, 3)
-	H.STAPER = rand(1, 21)
-	H.STALUC = rand(1, 21)
-
-	if(spawned.dna && spawned.dna.species)
-		spawned.dna.species.species_traits |= NOBLOOD
-		spawned.dna.species.soundpack_m = new /datum/voicepack/skeleton()
-		spawned.dna.species.soundpack_f = new /datum/voicepack/skeleton()
-
-	spawned.regenerate_limb(BODY_ZONE_R_ARM)
-	spawned.regenerate_limb(BODY_ZONE_L_ARM)
-	spawned.skeletonize()
-	spawned.base_intents = list(INTENT_HELP, INTENT_DISARM, INTENT_GRAB, /datum/intent/simple/claw)
-	spawned.update_a_intents()
-	spawned.grant_undead_eyes()
-	spawned.ambushable = FALSE
-	spawned.underwear = "Nude"
-	if(spawned.charflaw)
-		QDEL_NULL(spawned.charflaw)
-	spawned.update_body()
-	spawned.mob_biotypes = MOB_UNDEAD
-	spawned.faction = list(FACTION_UNDEAD)
-
-
-
-/* RAIDER SKELETONS */
-
-/datum/job/skeleton/raider
-	title = "Skeleton Raider"
-	outfit = /datum/outfit/skeleton/raider
-	cmode_music = 'sound/music/cmode/antag/combatskeleton.ogg'
-	antag_role = /datum/antagonist/skeleton
-
-	traits = list(
-		TRAIT_CRITICAL_WEAKNESS,
-		TRAIT_EASYDISMEMBER
+	H.STAPER = rand(7, 1)
+	H.STALUC = rand(5, 12)
+		subclass_skills = list(
+	/datum/skill/craft/carpentry = SKILL_LEVEL_NOVICE,
+	/datum/skill/craft/masonry = SKILL_LEVEL_NOVICE,
+	/datum/skill/craft/crafting = SKILL_LEVEL_NOVICE,
+	/datum/skill/craft/sewing = SKILL_LEVEL_NOVICE,
+	/datum/skill/combat/polearms = SKILL_LEVEL_JOURNEYMAN,
+	/datum/skill/combat/maces = SKILL_LEVEL_JOURNEYMAN,
+	/datum/skill/combat/axes = SKILL_LEVEL_JOURNEYMAN,
+	/datum/skill/combat/wrestling = SKILL_LEVEL_APPRENTICE,
+	/datum/skill/combat/unarmed = SKILL_LEVEL_APPRENTICE,
+	/datum/skill/misc/athletics = SKILL_LEVEL_EXPERT,
+	/datum/skill/combat/swords = SKILL_LEVEL_JOURNEYMAN,
+	/datum/skill/combat/shields = SKILL_LEVEL_APPRENTICE,
+	/datum/skill/combat/knives = SKILL_LEVEL_JOURNEYMAN,
+	/datum/skill/misc/climbing = SKILL_LEVEL_APPRENTICE,
 	)
-
-
-/datum/job/skeleton/raider/after_spawn(mob/living/carbon/human/spawned, client/player_client)
-	. = ..()
-	spawned.name = "skeleton"
-	spawned.real_name = "skeleton"
-	spawned.remove_all_languages()
-	spawned.grant_language(/datum/language/undead)
-	spawned.silent = TRUE
-
-	// Randomized stats
-	H.STASTR = rand(1, 21)
-	H.STAWIL = rand(1, 21)
-	H.STACON = rand(1, 21)
-	H.STAINT = rand(1, 3)
-	H.STAPER = rand(1, 21)
-	H.STALUC = rand(1, 21)
-
-
-
-/* CULT SUMMONS */
-
-/datum/job/skeleton/zizoid
-	title = "Cult Summon"
-	outfit = /datum/outfit/skeleton/zizoid
-	cmode_music = 'sound/music/cmode/antag/combat_cult.ogg'
-
-/datum/job/skeleton/zizoid/after_spawn(mob/living/carbon/human/spawned, client/player_client)
-	. = ..()
-	spawned.mind?.special_role = "Cult Summon"
-	spawned.mind?.current.job = null
-	spawned.set_patron(/datum/patron/inhumen/zizo)
-
-	// Randomized stats
-	spawned.base_strength = rand(8,17)
-	spawned.base_speed = rand(7,10)
-	spawned.base_intelligence = 1
-	spawned.base_constitution = 3
-	spawned.recalculate_stats(FALSE)
-
-	if(spawned.dna?.species)
-		spawned.dna.species.native_language = "Zizo Chant"
-		spawned.dna.species.accent_language = spawned.dna.species.get_accent(spawned.dna.species.native_language)
-
-	spawned.verbs |= /mob/living/carbon/human/proc/praise
-	spawned.verbs |= /mob/living/carbon/human/proc/communicate
-
-
-/* BASIC SKELETON OUTFIT */
-/datum/outfit/skeleton
-	name = "Skeleton"
-
-/datum/outfit/skeleton/pre_equip(mob/living/carbon/human/equipped_human)
-	. = ..()
-	equipped_human.underwear = "Nude"
-
-/* RAIDER SKELETON OUTFIT */
-/datum/outfit/skeleton/raider
-	name = "Skeleton Raider"
-
-/datum/outfit/skeleton/raider/pre_equip(mob/living/carbon/human/equipped_human)
-	. = ..()
 	// Randomized armor
 	if(prob(10))
-		armor = /obj/item/clothing/armor/gambeson/light
+		armor = /obj/item/clothing/suit/roguetown/armor/gambeson
 	if(prob(10))
-		armor = /obj/item/clothing/armor/leather/vest
+		armor = /obj/item/clothing/suit/roguetown/armor/leather/hide
 	if(prob(10))
-		armor = /obj/item/clothing/armor/chainmail/iron
+		armor = /obj/item/clothing/suit/roguetown/armor/chainmail/paalloy
 	if(prob(10))
-		armor = /obj/item/clothing/armor/cuirass/copperchest
+		armor = /obj/item/clothing/suit/roguetown/armor/plate/cuirass/aalloy
 	if(prob(10))
-		armor = /obj/item/clothing/armor/leather/hide
+		armor = /obj/item/clothing/suit/roguetown/armor/leather/jacket
 	if(prob(10))
-		armor = /obj/item/clothing/armor/cuirass/iron/rust
+		armor = /obj/item/clothing/suit/roguetown/armor/plate/cuirass/iron
 
 	// Randomized headgear
 	switch(pick(1,9))
-		if (1) head = /obj/item/clothing/head/helmet/kettle
-		if (2) head = /obj/item/clothing/head/helmet/winged
-		if (3) head = /obj/item/clothing/head/helmet/leather/conical
-		if (4) head = /obj/item/clothing/head/helmet/coppercap
-		if (5) neck = /obj/item/clothing/neck/coif/cloth
-		if (6) neck = /obj/item/clothing/neck/coif
-		if (7) head = /obj/item/clothing/head/helmet/horned
-		if (8) head = /obj/item/clothing/head/helmet/skullcap
-		if (9) head = /obj/item/clothing/head/helmet
+		if (1) head = /obj/item/clothing/head/roguetown/helmet/kettle
+		if (2) head = /obj/item/clothing/head/roguetown/helmet/winged
+		if (3) head = /obj/item/clothing/head/roguetown/helmet/leather
+		if (4) head = /obj/item/clothing/head/roguetown/helmet/coppercap
+		if (5) neck = /obj/item/clothing/neck/roguetown/coif/heavypadding
+		if (6) neck = /obj/item/clothing/neck/roguetown/coif/padded
+		if (7) head = /obj/item/clothing/head/roguetown/helmet/horned
+		if (8) head = /obj/item/clothing/head/roguetown/helmet/skullcap
+		if (9) head = /obj/item/clothing/head/roguetown/helmet/skullcap/cult
 
 	// Shield
 	if(prob(20))
-		backr = /obj/item/weapon/shield/wood
+		backr = /obj/item/rogueweapon/shield/iron
 
 	// Randomized weapons
 	switch(pick(1,6))
@@ -185,8 +120,3 @@
 		if (6)
 			var/obj/item/weapon/flail/militia/P = new()
 			equipped_human.put_in_hands(P, forced = TRUE)
-
-/* ZIZOID CULT SUMMON OUTFIT */
-/datum/outfit/skeleton/zizoid
-	name = "Cult Summon"
-

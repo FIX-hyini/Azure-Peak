@@ -396,29 +396,6 @@ GLOBAL_LIST_INIT(ritualslist, build_zizo_rituals())
 	new /obj/item/natural/worms/leech/propaganda(center)
 	to_chat(user, span_notice("A leech to make their minds wrangled. They'll be in bad spirits."))
 
-// Wtf is this shit
-// /datum/ritual/transmutation/falseidol
-// 	name = "False Idol"
-// 	center_requirement = /mob/living/carbon/human
-// 	w_req = /obj/item/paper
-// 	s_req = /obj/item/natural/feather
-
-// /datum/ritual/transmutation/falseidol/invoke(mob/living/user, turf/center)
-// 	var/mob/living/carbon/human/target = locate() in center.contents
-// 	if(!target)
-// 		return
-// 	var/obj/effect/dummy/falseidol/idol = new(center)
-
-// /obj/effect/dummy/falseidol
-// 	name = "false idol"
-// 	icon = 'icons/effects/effects.dmi'
-// 	icon_state = "static"
-// 	desc = "Through lies interwine from blood into truth."
-
-// /obj/effect/dummy/falseidol/Crossed(atom/movable/AM, oldloc)
-// 	. = ..()
-// 	qdel(src)
-
 /datum/ritual/transmutation/invademind
 	name = "Invade Mind"
 	center_requirement = /obj/item/natural/feather
