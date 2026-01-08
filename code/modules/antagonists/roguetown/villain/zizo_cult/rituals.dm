@@ -424,7 +424,7 @@ GLOBAL_LIST_INIT(ritualslist, build_zizo_rituals())
 
 	new /obj/item/clothing/head/roguetown/helmet/skullcap/cult(center)
 
-	//new /obj/item/clothing/cloak/half/shadowcloak/cult(center)
+	new /obj/item/clothing/cloak/half/shadowcloak/cult(center)
 
 	new /obj/item/rope/chain(center)
 

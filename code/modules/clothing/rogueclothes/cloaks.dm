@@ -1034,6 +1034,13 @@
 	color = null
 	allowed_race = NON_DWARVEN_RACE_TYPES
 
+/obj/item/clothing/cloak/half/shadowcloak/cult
+	name = "ominous cloak"
+	desc = "Those who wear, thy should beware, for those who do; never come back as who they once were again."
+	allowed_race = NON_DWARVEN_RACE_TYPES
+	body_parts_covered = ARMS|CHEST|VITALS
+	armor = ARMOR_PADDED_GOOD
+
 /obj/item/clothing/cloak/thief_cloak
 	name = "rapscallion's shawl"
 	desc = "A simple shawl clapsed with an ersatz fastener. Practical and functional, though the fabric is rough and wearing bare."
