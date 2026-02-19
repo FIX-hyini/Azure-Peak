@@ -33,7 +33,9 @@ GLOBAL_LIST_INIT(character_flaws, list(
 	/datum/charflaw/mind_broken::name = /datum/charflaw/mind_broken,
 	/datum/charflaw/noflaw::name = /datum/charflaw/noflaw,
 	/datum/charflaw/leprosy::name = /datum/charflaw/leprosy,
-	/datum/charflaw/randflaw::name = /datum/charflaw/randflaw
+	/datum/charflaw/randflaw::name = /datum/charflaw/randflaw,
+	/datum/charflaw/nude_sleeper::name = /datum/charflaw/nude_sleeper,
+	/datum/charflaw/nudist::name = /datum/charflaw/nudist,
 	))
 
 GLOBAL_LIST_INIT(averse_factions, list(
@@ -223,6 +225,26 @@ GLOBAL_LIST_INIT(averse_factions, list(
 			break
 	if(cnt > 6)
 		user.add_stress(/datum/stressevent/parablood)
+
+/datum/charflaw/nude_sleeper
+	name = "Nude Sleeper"
+	desc = "I can't fall asleep unless I'm nude and in bed."
+
+/datum/charflaw/nude_sleeper/on_mob_creation(mob/user)
+	..()
+	if(ishuman(user))
+		var/mob/living/carbon/human/H = user
+		ADD_TRAIT(H, TRAIT_NUDE_SLEEPER, TRAIT_GENERIC)
+
+/datum/charflaw/nudist
+	name = "Nudist"
+	desc = "I refuse to wear clothes. They are a hindrance to my freedom."
+
+/datum/charflaw/nudist/on_mob_creation(mob/user)
+	..()
+	if(ishuman(user))
+		var/mob/living/carbon/human/H = user
+		ADD_TRAIT(H, TRAIT_NUDIST, TRAIT_GENERIC)
 
 /datum/charflaw/finicky
 	name = "Finicky"
